@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "36498256399",
+    "project_id": "expo-agac",
+    "storage_bucket": "expo-agac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:36498256399:android:5cee89ce6c24d6eb41697a",
+        "android_client_info": {
+          "package_name": "com.expoagac"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "36498256399-5dh7mh4600duoiddui0jhc12q7k7a4ue.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.expoagac",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "36498256399-v5he494sfo8n0g0i2qio5smgdjf65jn4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6FhSJloyqDXUPHVvNsn2MVVMN8KfreFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "36498256399-v5he494sfo8n0g0i2qio5smgdjf65jn4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
