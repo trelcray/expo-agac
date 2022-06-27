@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import auth from '@react-native-firebase/auth'
 import { MaterialIcons } from '@expo/vector-icons';
-import { Center, Box, Heading, Input, FormControl, VStack, Icon, Button, Image, WarningOutlineIcon } from "native-base";
+import { Center, Box, Heading, Input, FormControl, VStack, Icon, Button, Image, WarningOutlineIcon, Text } from "native-base";
 import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
 
@@ -71,7 +71,9 @@ export function Registrar() {
     <Center height='full'>
       <Image
         size={150}
-        source={{ uri: 'http://ned.unifenas.br/landing-extensao/img/horas-atividades-complementares.png' }}
+        source={{
+          uri: 'http://ned.unifenas.br/landing-extensao/img/horas-atividades-complementares.png'
+        }}
         alt="Logo do aplicativo"
         resizeMode='contain'
       />
@@ -84,8 +86,19 @@ export function Registrar() {
             Registrar
           </Heading>
           <FormControl isRequired={requiredEmail} isInvalid={invalidEmail}>
-            <FormControl.Label> E-mail </FormControl.Label>
-            <Input type='text'
+            <FormControl.Label>
+              <Text
+                color="coolGray.600"
+                fontWeight={'bold'}
+              >
+                E-mail
+              </Text>
+            </FormControl.Label>
+            <Input
+              type='text'
+              placeholderTextColor="#efefef"
+              bgColor="coolGray.900"
+              color="#efefef"
               placeholder='seu@email.com'
               onChangeText={setEmail}
               onPressIn={resetEmail}
@@ -94,19 +107,33 @@ export function Registrar() {
                   as={<MaterialIcons name="person" />}
                   size={5}
                   ml={2}
-                  color="muted.400"
+                  color="#efefef"
                 />
 
               }
             />
             <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}>
+              leftIcon={
+                <WarningOutlineIcon
+                  size="xs"
+                />}>
               E-mail Inválido
             </FormControl.ErrorMessage>
           </FormControl>
           <FormControl isRequired={requiredSenha} isInvalid={invalidSenha}>
-            <FormControl.Label> Senha </FormControl.Label>
-            <Input type='password'
+            <FormControl.Label>
+              <Text
+                color="coolGray.600"
+                fontWeight={'bold'}
+              >
+                Senha
+              </Text>
+            </FormControl.Label>
+            <Input
+              type='password'
+              placeholderTextColor="#efefef"
+              bgColor="coolGray.900"
+              color="#efefef"
               placeholder='sua senha'
               onChangeText={setSenha}
               onPressIn={resetSenha}
@@ -115,35 +142,55 @@ export function Registrar() {
                   as={<MaterialIcons name="lock" />}
                   size={5}
                   ml={2}
-                  color="muted.400"
+                  color="#efefef"
                 />
 
               }
             />
             <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}>
+              leftIcon={
+                <WarningOutlineIcon
+                  size="xs"
+                />}>
               Senha Inválida
             </FormControl.ErrorMessage>
           </FormControl>
 
           <FormControl isRequired={requiredConfirmar} isInvalid={invalidConfirmar}>
-            <FormControl.Label> Confirmar Senha </FormControl.Label>
-            <Input type='password'
+            <FormControl.Label>
+              <Text
+                color="coolGray.600"
+                fontWeight={'bold'}
+              >
+                Confirmar Senha
+              </Text>
+            </FormControl.Label>
+            <Input
+              type='password'
+              placeholderTextColor="#efefef"
+              bgColor="coolGray.900"
+              color="#efefef"
               placeholder='confirmar sua senha'
               onChangeText={setConfirmar}
               onPressIn={resetConfirmar}
               InputLeftElement={
                 <Icon
-                  as={<MaterialIcons name="lock" />}
+                  as={
+                    <MaterialIcons
+                      name="lock"
+                    />}
                   size={5}
                   ml={2}
-                  color="muted.400"
+                  color="#efefef"
                 />
 
               }
             />
             <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}>
+              leftIcon={
+                <WarningOutlineIcon
+                  size="xs"
+                />}>
               Senhas incompatíveis
             </FormControl.ErrorMessage>
           </FormControl>
@@ -151,14 +198,18 @@ export function Registrar() {
           <Button
             mt="7"
             colorScheme="warning"
-            onPress={novoUsuario}>
+            onPress={novoUsuario}
+          >
             Criar conta
           </Button>
 
           <Button
             mt="7"
             colorScheme="gray"
-            onPress={openScreen}>Já possuo uma conta</Button>
+            onPress={openScreen}
+          >
+            Já possuo uma conta
+          </Button>
 
         </Box>
       </VStack>

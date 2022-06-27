@@ -26,11 +26,10 @@ export function AuthRoutes() {
 export function UserRoutes() {
     return (
         <stack.Navigator
-
             screenOptions={{
                 headerTitleAlign: 'center',
                 headerStyle: {
-                    backgroundColor: '#4A4544',
+                    backgroundColor: '#323238',
                 },
                 headerTintColor: '#fff',
                 headerTitleStyle: {
