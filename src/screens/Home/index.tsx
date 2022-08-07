@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { Button, Box, Text, Flex, Pressable, ScrollView, Popover, FormControl, Input, Icon, Divider } from 'native-base';
@@ -9,6 +9,7 @@ export function Home() {
   const navigation = useNavigation();
 
   const initialFocusRef = React.useRef(null);
+  const [ show, setShow ] = useState(false)
 
   function openScreen() {
     navigation.navigate('CriarCurso');
@@ -30,18 +31,6 @@ export function Home() {
       bg="#E1E1E6"
     >
       <Box h="5/6">
-        <Text
-          display="flex"
-          pb={2}
-          mt={4}
-          textAlign="center"
-          fontWeight="bold"
-          fontSize={'20'}
-          borderBottomWidth={1}
-          mx={4}
-        >
-          Seus Cursos
-        </Text>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Pressable
             mt={4}
@@ -217,25 +206,159 @@ export function Home() {
               </Box>;
             }}
           </Pressable>
+          <Pressable mt={4} mx={4}>
+            {({
+              isHovered,
+              isPressed
+            }) => {
+              return <Box
+                borderColor="coolGray.400"
+                shadow="3"
+                bg={isPressed ? "coolGray.300" : isHovered ? "coolGray.200" : "coolGray.100"}
+                p="2" rounded="8"
+                borderLeftWidth={12}
+                roundedLeft={3}
+                style={{
+                  transform: [{
+                    scale: isPressed ? 0.96 : 1
+                  }]
+                }}>
+                <Text color="black" mt={1} mb={2} fontWeight="bold" fontSize="md">
+                  Psicologia
+                </Text>
+                <Flex flexDirection="row">
+                  <Box
+                    mt={2}
+                    mr={1}>
+                    <MaterialIcons name='timer' size={19} />
+                  </Box>
+                  <Text
+                    mt="2"
+                    fontSize="sm"
+                    fontWeight="medium"
+                  >
+                    20/02/22 ás 15:30
+                  </Text>
+
+                  <Box display="flex" justifyContent="flex-end" flexDirection="row" alignItems="flex-end" width={"1/2"}
+                    mt={2}
+                    ml={3}>
+                    <MaterialIcons color="#ea580c" name='hourglass-top' size={19} />
+                  </Box>
+                </Flex>
+              </Box>;
+            }}
+          </Pressable>
+          <Pressable mt={4} mx={4}>
+            {({
+              isHovered,
+              isPressed
+            }) => {
+              return <Box
+                borderColor="coolGray.400"
+                shadow="3"
+                bg={isPressed ? "coolGray.300" : isHovered ? "coolGray.200" : "coolGray.100"}
+                p="2" rounded="8"
+                borderLeftWidth={12}
+                roundedLeft={3}
+                style={{
+                  transform: [{
+                    scale: isPressed ? 0.96 : 1
+                  }]
+                }}>
+                <Text color="black" mt={1} mb={2} fontWeight="bold" fontSize="md">
+                  Psicologia
+                </Text>
+                <Flex flexDirection="row">
+                  <Box
+                    mt={2}
+                    mr={1}>
+                    <MaterialIcons name='timer' size={19} />
+                  </Box>
+                  <Text
+                    mt="2"
+                    fontSize="sm"
+                    fontWeight="medium"
+                  >
+                    20/02/22 ás 15:30
+                  </Text>
+
+                  <Box display="flex" justifyContent="flex-end" flexDirection="row" alignItems="flex-end" width={"1/2"}
+                    mt={2}
+                    ml={3}>
+                    <MaterialIcons color="#ea580c" name='hourglass-top' size={19} />
+                  </Box>
+                </Flex>
+              </Box>;
+            }}
+          </Pressable>
+          <Pressable mt={4} mx={4}>
+            {({
+              isHovered,
+              isPressed
+            }) => {
+              return <Box
+                borderColor="coolGray.400"
+                shadow="3"
+                bg={isPressed ? "coolGray.300" : isHovered ? "coolGray.200" : "coolGray.100"}
+                p="2" rounded="8"
+                borderLeftWidth={12}
+                roundedLeft={3}
+                style={{
+                  transform: [{
+                    scale: isPressed ? 0.96 : 1
+                  }]
+                }}>
+                <Text color="black" mt={1} mb={2} fontWeight="bold" fontSize="md">
+                  Psicologia
+                </Text>
+                <Flex flexDirection="row">
+                  <Box
+                    mt={2}
+                    mr={1}>
+                    <MaterialIcons name='timer' size={19} />
+                  </Box>
+                  <Text
+                    mt="2"
+                    fontSize="sm"
+                    fontWeight="medium"
+                  >
+                    20/02/22 ás 15:30
+                  </Text>
+
+                  <Box display="flex" justifyContent="flex-end" flexDirection="row" alignItems="flex-end" width={"1/2"}
+                    mt={2}
+                    ml={3}>
+                    <MaterialIcons color="#ea580c" name='hourglass-top' size={19} />
+                  </Box>
+                </Flex>
+              </Box>;
+            }}
+          </Pressable>
         </ScrollView>
 
       </Box>
 
       <Box h="1/6" display="flex" flexDirection="row" alignItems="center" justifyContent="center">
-        <Popover initialFocusRef={initialFocusRef} trigger={triggerProps => {
-          return <Button bgColor="warning.600"
-            leftIcon={<MaterialIcons
+        <Popover isOpen={show} initialFocusRef={initialFocusRef} trigger={triggerProps => {
+          return (     
+          <Button
+              {...triggerProps}
+              onPress={() => setShow(!show)}
+              bgColor="warning.600"
+              leftIcon={<MaterialIcons
               name='add-circle-outline'
               size={24}
               color="#efefef"
             />}
-            {...triggerProps}>
+            >
             <Text
               fontWeight="bold"
               color="#efefef"
             >
               Criar curso
-            </Text></Button>;
+            </Text></Button>
+            );
         }}>
           <Popover.Content width="56">
             <Popover.Arrow bgColor="coolGray.700" />
@@ -247,6 +370,30 @@ export function Home() {
               color: "#efefef"
             }}>Crie seu Curso</Popover.Header>
             <Popover.Body bgColor="coolGray.700">
+              <FormControl>
+                <FormControl.Label _text={{
+                  fontSize: "xs",
+                  fontWeight: "medium",
+                  color: "#efefef"
+                }}>
+                  Nome do Aluno
+                </FormControl.Label>
+                <Input
+                  rounded="sm"
+                  fontSize="xs"
+                  placeholderTextColor="#efefef"
+                  color="#efefef"
+                  placeholder='Digite seu Nome'
+                  bgColor="coolGray.900"
+                  selectionColor="#efefef"
+                  InputLeftElement={
+                    <Icon as={<MaterialIcons name="person" />}
+                      size={5}
+                      ml={2}
+                      color="#efefef" />}
+                  ref={initialFocusRef}
+                />
+              </FormControl>
               <FormControl>
                 <FormControl.Label _text={{
                   fontSize: "xs",
@@ -317,10 +464,12 @@ export function Home() {
             </Popover.Body>
             <Popover.Footer bgColor="coolGray.700">
               <Button.Group>
-                <Button colorScheme="coolGray" variant="ghost">
+                <Button onPress={() => setShow(!show)} colorScheme="coolGray">
                   Cancel
                 </Button>
-                <Button colorScheme="warning">Save</Button>
+                <Button onPress={() => setShow(!show)} colorScheme="warning">
+                  Save
+                </Button>
               </Button.Group>
             </Popover.Footer>
           </Popover.Content>
