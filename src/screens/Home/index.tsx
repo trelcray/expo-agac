@@ -1,21 +1,34 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
-import { Button, Box, Text, Flex, Pressable, ScrollView, Popover, FormControl, Input, Icon, Divider } from 'native-base';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Button, Text, Popover, FormControl, Icon, Divider, FlatList, VStack, HStack, Center, Heading } from 'native-base';
+import { Input } from '../../components/Input';
+import { Button as CButton} from '../../components/Button';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Curses, CursesProps } from '../../components/Curses';
 
 
 export function Home() {
   const navigation = useNavigation();
 
-  const initialFocusRef = React.useRef(null);
-  const [ show, setShow ] = useState(false)
+  const initialFocusRef = useRef(null);
+  const [show, setShow] = useState(false);
+  const [curses, setCurses] = useState<CursesProps[]>([{
+    id_curso: "123",
+    nome_curso: "Tecnologia em análise e desenvolvimento de sistemas",
+    encerramento: "20/02/2022 ás 15:30",
+    horas_complementares: 230,
+    status: 'open'
+  },
+  {
+    id_curso: "124",
+    nome_curso: "Tecnologia em análise e desenvolvimento de sistemas",
+    encerramento: "20/02/2022 ás 15:30",
+    horas_complementares: 230,
+    status: 'closed'
+  }]);
 
   function openScreen() {
-    navigation.navigate('CriarCurso');
-  }
-
-  function openScreen2() {
     navigation.navigate('Atividade');
   }
 
@@ -24,345 +37,63 @@ export function Home() {
   }
 
   return (
-    <Box
-      safeArea
-      maxHeight="full"
-      height="full"
-      bg="#E1E1E6"
+    <VStack
+      px={4}
+      py={6}
+      flex={1}
+      bgColor="#E1E1E6"
     >
-      <Box h="5/6">
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <Pressable
-            mt={4}
-            mx={4}
-            onPress={openScreen2}
-          >
-            {({
-              isHovered,
-              isPressed
-            }) => {
-              return <Box borderColor="coolGray.700" shadow="3" bg={isPressed ? "coolGray.300" : isHovered ? "coolGray.200" : "coolGray.100"} p="2" rounded="8" borderLeftWidth={12} roundedLeft={3} style={{
-                transform: [{
-                  scale: isPressed ? 0.96 : 1
-                }]
-              }}>
-                <Text color="black" mt={1} mb={2} fontWeight="bold" fontSize="md">
-                  Tecnologia em análise e desenvolvimento de sistemas
-                </Text>
-                <Flex flexDirection="row">
-                  <Box
-                    mt={2}
-                    mr={1}>
-                    <MaterialIcons name='history-toggle-off' size={19} />
-                  </Box>
-                  <Text
-                    mt="2"
-                    fontSize="sm"
-                    fontWeight="medium"
-                  >
-                    20/02/22 ás 15:30
-                  </Text>
 
-                  <Box
-                    display="flex"
-                    justifyContent="flex-end"
-                    flexDirection="row"
-                    alignItems="flex-end"
-                    width={"1/2"}
-                    mt={2}
-                    ml={3}>
-                    <MaterialIcons color="#15803d" name='check-circle' size={19} />
-                  </Box>
-                </Flex>
-              </Box>;
-            }}
-          </Pressable>
-          <Pressable mt={4} mx={4}>
-            {({
-              isHovered,
-              isPressed
-            }) => {
-              return <Box
-                borderColor="coolGray.400"
-                shadow="3"
-                bg={isPressed ? "coolGray.300" : isHovered ? "coolGray.200" : "coolGray.100"}
-                p="2" rounded="8"
-                borderLeftWidth={12}
-                roundedLeft={3}
-                style={{
-                  transform: [{
-                    scale: isPressed ? 0.96 : 1
-                  }]
-                }}>
-                <Text color="black" mt={1} mb={2} fontWeight="bold" fontSize="md">
-                  Psicologia
-                </Text>
-                <Flex flexDirection="row">
-                  <Box
-                    mt={2}
-                    mr={1}>
-                    <MaterialIcons name='timer' size={19} />
-                  </Box>
-                  <Text
-                    mt="2"
-                    fontSize="sm"
-                    fontWeight="medium"
-                  >
-                    20/02/22 ás 15:30
-                  </Text>
+      <FlatList
+        data={curses}
+        keyExtractor={item => item.id_curso}
+        renderItem={({ item }) => <Curses data={item} onPress={openScreen} />}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() => (
+          <Center>
+            <MaterialCommunityIcons name="chat-alert-outline" size={40} color="gray" />
+            <Text
+              color="black"
+              mt={6}
+              fontSize="xl"
+              textAlign="center"
+            >
+              Você ainda não possui {'\n'}
+              cursos cadastrados!
+            </Text>
+          </Center>
+        )}
+      />
 
-                  <Box display="flex" justifyContent="flex-end" flexDirection="row" alignItems="flex-end" width={"1/2"}
-                    mt={2}
-                    ml={3}>
-                    <MaterialIcons color="#ea580c" name='hourglass-top' size={19} />
-                  </Box>
-                </Flex>
-              </Box>;
-            }}
-          </Pressable>
-          <Pressable mt={4} mx={4}>
-            {({
-              isHovered,
-              isPressed
-            }) => {
-              return <Box
-                borderColor="coolGray.400"
-                shadow="3"
-                bg={isPressed ? "coolGray.300" : isHovered ? "coolGray.200" : "coolGray.100"}
-                p="2" rounded="8"
-                borderLeftWidth={12}
-                roundedLeft={3}
-                style={{
-                  transform: [{
-                    scale: isPressed ? 0.96 : 1
-                  }]
-                }}>
-                <Text color="black" mt={1} mb={2} fontWeight="bold" fontSize="md">
-                  Psicologia
-                </Text>
-                <Flex flexDirection="row">
-                  <Box
-                    mt={2}
-                    mr={1}>
-                    <MaterialIcons name='timer' size={19} />
-                  </Box>
-                  <Text
-                    mt="2"
-                    fontSize="sm"
-                    fontWeight="medium"
-                  >
-                    20/02/22 ás 15:30
-                  </Text>
 
-                  <Box display="flex" justifyContent="flex-end" flexDirection="row" alignItems="flex-end" width={"1/2"}
-                    mt={2}
-                    ml={3}>
-                    <MaterialIcons color="#ea580c" name='hourglass-top' size={19} />
-                  </Box>
-                </Flex>
-              </Box>;
-            }}
-          </Pressable>
-          <Pressable mt={4} mx={4}>
-            {({
-              isHovered,
-              isPressed
-            }) => {
-              return <Box
-                borderColor="coolGray.400"
-                shadow="3"
-                bg={isPressed ? "coolGray.300" : isHovered ? "coolGray.200" : "coolGray.100"}
-                p="2" rounded="8"
-                borderLeftWidth={12}
-                roundedLeft={3}
-                style={{
-                  transform: [{
-                    scale: isPressed ? 0.96 : 1
-                  }]
-                }}>
-                <Text color="black" mt={1} mb={2} fontWeight="bold" fontSize="md">
-                  Psicologia
-                </Text>
-                <Flex flexDirection="row">
-                  <Box
-                    mt={2}
-                    mr={1}>
-                    <MaterialIcons name='timer' size={19} />
-                  </Box>
-                  <Text
-                    mt="2"
-                    fontSize="sm"
-                    fontWeight="medium"
-                  >
-                    20/02/22 ás 15:30
-                  </Text>
-
-                  <Box display="flex" justifyContent="flex-end" flexDirection="row" alignItems="flex-end" width={"1/2"}
-                    mt={2}
-                    ml={3}>
-                    <MaterialIcons color="#ea580c" name='hourglass-top' size={19} />
-                  </Box>
-                </Flex>
-              </Box>;
-            }}
-          </Pressable>
-          <Pressable mt={4} mx={4}>
-            {({
-              isHovered,
-              isPressed
-            }) => {
-              return <Box
-                borderColor="coolGray.400"
-                shadow="3"
-                bg={isPressed ? "coolGray.300" : isHovered ? "coolGray.200" : "coolGray.100"}
-                p="2" rounded="8"
-                borderLeftWidth={12}
-                roundedLeft={3}
-                style={{
-                  transform: [{
-                    scale: isPressed ? 0.96 : 1
-                  }]
-                }}>
-                <Text color="black" mt={1} mb={2} fontWeight="bold" fontSize="md">
-                  Psicologia
-                </Text>
-                <Flex flexDirection="row">
-                  <Box
-                    mt={2}
-                    mr={1}>
-                    <MaterialIcons name='timer' size={19} />
-                  </Box>
-                  <Text
-                    mt="2"
-                    fontSize="sm"
-                    fontWeight="medium"
-                  >
-                    20/02/22 ás 15:30
-                  </Text>
-
-                  <Box display="flex" justifyContent="flex-end" flexDirection="row" alignItems="flex-end" width={"1/2"}
-                    mt={2}
-                    ml={3}>
-                    <MaterialIcons color="#ea580c" name='hourglass-top' size={19} />
-                  </Box>
-                </Flex>
-              </Box>;
-            }}
-          </Pressable>
-          <Pressable mt={4} mx={4}>
-            {({
-              isHovered,
-              isPressed
-            }) => {
-              return <Box
-                borderColor="coolGray.400"
-                shadow="3"
-                bg={isPressed ? "coolGray.300" : isHovered ? "coolGray.200" : "coolGray.100"}
-                p="2" rounded="8"
-                borderLeftWidth={12}
-                roundedLeft={3}
-                style={{
-                  transform: [{
-                    scale: isPressed ? 0.96 : 1
-                  }]
-                }}>
-                <Text color="black" mt={1} mb={2} fontWeight="bold" fontSize="md">
-                  Psicologia
-                </Text>
-                <Flex flexDirection="row">
-                  <Box
-                    mt={2}
-                    mr={1}>
-                    <MaterialIcons name='timer' size={19} />
-                  </Box>
-                  <Text
-                    mt="2"
-                    fontSize="sm"
-                    fontWeight="medium"
-                  >
-                    20/02/22 ás 15:30
-                  </Text>
-
-                  <Box display="flex" justifyContent="flex-end" flexDirection="row" alignItems="flex-end" width={"1/2"}
-                    mt={2}
-                    ml={3}>
-                    <MaterialIcons color="#ea580c" name='hourglass-top' size={19} />
-                  </Box>
-                </Flex>
-              </Box>;
-            }}
-          </Pressable>
-          <Pressable mt={4} mx={4}>
-            {({
-              isHovered,
-              isPressed
-            }) => {
-              return <Box
-                borderColor="coolGray.400"
-                shadow="3"
-                bg={isPressed ? "coolGray.300" : isHovered ? "coolGray.200" : "coolGray.100"}
-                p="2" rounded="8"
-                borderLeftWidth={12}
-                roundedLeft={3}
-                style={{
-                  transform: [{
-                    scale: isPressed ? 0.96 : 1
-                  }]
-                }}>
-                <Text color="black" mt={1} mb={2} fontWeight="bold" fontSize="md">
-                  Psicologia
-                </Text>
-                <Flex flexDirection="row">
-                  <Box
-                    mt={2}
-                    mr={1}>
-                    <MaterialIcons name='timer' size={19} />
-                  </Box>
-                  <Text
-                    mt="2"
-                    fontSize="sm"
-                    fontWeight="medium"
-                  >
-                    20/02/22 ás 15:30
-                  </Text>
-
-                  <Box display="flex" justifyContent="flex-end" flexDirection="row" alignItems="flex-end" width={"1/2"}
-                    mt={2}
-                    ml={3}>
-                    <MaterialIcons color="#ea580c" name='hourglass-top' size={19} />
-                  </Box>
-                </Flex>
-              </Box>;
-            }}
-          </Pressable>
-        </ScrollView>
-
-      </Box>
-
-      <Box h="1/6" display="flex" flexDirection="row" alignItems="center" justifyContent="center">
+      <HStack w="full" justifyContent="center" alignItems="center" mt={4}>
         <Popover isOpen={show} initialFocusRef={initialFocusRef} trigger={triggerProps => {
-          return (     
-          <Button
+          return (
+            <Button
               {...triggerProps}
               onPress={() => setShow(!show)}
               bgColor="warning.600"
+              _pressed={{
+                bgColor: "warning.700"
+              }}
               leftIcon={<MaterialIcons
-              name='add-circle-outline'
-              size={24}
-              color="#efefef"
-            />}
+                name='add-circle-outline'
+                size={28}
+                color="#efefef"
+              />}
             >
-            <Text
-              fontWeight="bold"
-              color="#efefef"
-            >
-              Criar curso
-            </Text></Button>
-            );
+              <Heading
+                color="white"
+                fontSize="md"
+              >
+                Criar Curso
+              </Heading>
+            </Button>
+          );
         }}>
           <Popover.Content width="56">
             <Popover.Arrow bgColor="coolGray.700" />
-            <Popover.CloseButton />
+            <Popover.CloseButton onPress={() => setShow(!show)} />
             {
               /* @ts-ignore */
             }
@@ -379,19 +110,12 @@ export function Home() {
                   Nome do Aluno
                 </FormControl.Label>
                 <Input
-                  rounded="sm"
-                  fontSize="xs"
-                  placeholderTextColor="#efefef"
-                  color="#efefef"
                   placeholder='Digite seu Nome'
-                  bgColor="coolGray.900"
-                  selectionColor="#efefef"
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="person" />}
                       size={5}
                       ml={2}
                       color="#efefef" />}
-                  ref={initialFocusRef}
                 />
               </FormControl>
               <FormControl>
@@ -403,19 +127,12 @@ export function Home() {
                   Nome do Curso
                 </FormControl.Label>
                 <Input
-                  rounded="sm"
-                  fontSize="xs"
-                  placeholderTextColor="#efefef"
-                  color="#efefef"
                   placeholder='seu curso'
-                  bgColor="coolGray.900"
-                  selectionColor="#efefef"
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="local-library" />}
                       size={5}
                       ml={2}
                       color="#efefef" />}
-                  ref={initialFocusRef}
                 />
               </FormControl>
               <FormControl mt="3">
@@ -426,12 +143,8 @@ export function Home() {
                 }}>
                   Horas Complementares Necessárias
                 </FormControl.Label>
-                <Input rounded="sm" fontSize="xs"
-                  placeholderTextColor="#efefef"
-                  color="#efefef"
+                <Input
                   placeholder='A cargo horária exigida'
-                  bgColor="coolGray.900"
-                  selectionColor="#efefef"
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="timer" />}
                       size={5}
@@ -447,45 +160,47 @@ export function Home() {
                 }}>
                   Encerramento do Curso
                 </FormControl.Label>
-                <Input rounded="sm"
-                  fontSize="xs"
-                  placeholderTextColor="#efefef"
-                  color="#efefef"
+                <Input
                   placeholder='O término do curso'
-                  bgColor="coolGray.900"
-                  selectionColor="#efefef"
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="timer-off" />}
                       size={5}
                       ml={2}
-                      color="#efefef" />}
+                      color="#efefef"
+                    />
+                  }
                 />
               </FormControl>
             </Popover.Body>
             <Popover.Footer bgColor="coolGray.700">
               <Button.Group>
-                <Button onPress={() => setShow(!show)} colorScheme="coolGray">
-                  Cancel
+                <Button onPress={() => setShow(!show)} colorScheme="coolGray" >
+                  Cancelar
                 </Button>
-                <Button onPress={() => setShow(!show)} colorScheme="warning">
-                  Save
+                <Button onPress={() => setShow(!show)} colorScheme="warning" >
+                  Salvar
                 </Button>
               </Button.Group>
             </Popover.Footer>
           </Popover.Content>
         </Popover>
-        <Divider orientation="vertical" bgColor={"coolGray.700"} thickness="3" h={'2/6'} mx="2" />
-        <Button
-          py={2}
+
+        <Divider orientation="vertical" bgColor={"coolGray.700"} thickness="3" mx="2" />
+
+        <CButton
+          title='Sair'
           px={8}
-          colorScheme="muted"
+          bgColor="muted.600"
+          _pressed={{
+            bgColor: "muted.700"
+          }}
           leftIcon={<MaterialIcons
             name='exit-to-app'
             size={28}
             color="#efefef" />}
           onPress={handleSignOut}
-        > Sair</Button>
-      </Box>
-    </Box>
+        />
+      </HStack>
+    </VStack>
   );
 }

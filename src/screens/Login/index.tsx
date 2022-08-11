@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import auth from '@react-native-firebase/auth'
 import { MaterialIcons } from '@expo/vector-icons';
 import {
-  Center, Box, Heading, Input, FormControl,
-  VStack, Icon, Button, Checkbox, WarningOutlineIcon,
+  Center, Box, Heading, FormControl,
+  VStack, Icon, Checkbox, WarningOutlineIcon,
   Image, HStack, Text
 } from "native-base";
-
+import { Input } from '../../components/Input';
+import { Button } from '../../components/Button';
 import { Alert, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -72,8 +73,8 @@ export function Login() {
   }
 
   return (
-    <Box safeArea>
-      <Center height='full' bg={'#E1E1E6'}>
+    <Box>
+      <Center height='full' bgColor={'#fff'}>
         <Image
           size={150}
           source={{ uri: 'http://ned.unifenas.br/landing-extensao/img/horas-atividades-complementares.png' }}
@@ -84,10 +85,11 @@ export function Login() {
           width="full"
           p={10}>
           <Box width="full">
-
-            <Heading color="coolGray.700">
-              Entrar
-            </Heading>
+            <Center>
+              <Heading color="coolGray.700">
+                Entrar
+              </Heading>
+            </Center>
 
             <FormControl isRequired={requiredEmail} isInvalid={invalidEmail}>
 
@@ -99,10 +101,7 @@ export function Login() {
                   E-mail
                 </Text>
               </FormControl.Label>
-              <Input type='text'
-                placeholderTextColor="#efefef"
-                bgColor="coolGray.900"
-                color="#efefef"
+              <Input
                 placeholder='seu@email.com'
                 onChangeText={setEmail}
                 onPressIn={resetEmail}
@@ -131,11 +130,8 @@ export function Login() {
                 </Text>
               </FormControl.Label>
               <Input
-                type='password'
-                placeholderTextColor="#efefef"
-                bgColor="coolGray.900"
-                color="#efefef"
                 placeholder='sua senha'
+                secureTextEntry
                 onChangeText={setSenha}
                 onPressIn={resetSenha}
                 InputLeftElement={
@@ -173,9 +169,14 @@ export function Login() {
 
 
             <Button
+              title='Entrar'
               mt="7"
-              colorScheme="warning"
-              onPress={logar}>Entrar</Button>
+              bgColor="warning.500"
+              onPress={logar}
+              _pressed={{
+                bgColor: "warning.600"
+              }}
+            />
 
           </Box>
         </VStack>

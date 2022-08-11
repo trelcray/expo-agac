@@ -1,10 +1,15 @@
 import { Routes } from "./src/routes";
-import { NativeBaseProvider } from "native-base";
+import { NativeBaseProvider, StatusBar } from "native-base";
 
-export default function App(){
+export default function App() {
   return (
     <NativeBaseProvider>
-     <Routes />
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent
+      />
+      <Routes />
     </NativeBaseProvider>
   );
 }

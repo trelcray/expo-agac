@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import auth from '@react-native-firebase/auth'
 import { MaterialIcons } from '@expo/vector-icons';
-import { Center, Box, Heading, Input, FormControl, VStack, Icon, Button, Image, WarningOutlineIcon, Text } from "native-base";
+import { Center, Box, Heading, FormControl, VStack, Icon, Image, WarningOutlineIcon, Text } from "native-base";
 import { useNavigation } from '@react-navigation/native';
+import { Input } from '../../components/Input';
 import { Alert } from 'react-native';
+import { Button } from '../../components/Button';
 
 export function Registrar() {
   const [email, setEmail] = useState('');
@@ -68,7 +70,7 @@ export function Registrar() {
     navigation.navigate('Login');
   }
   return (
-    <Center height='full'>
+    <Center height='full' bgColor="white">
       <Image
         size={150}
         source={{
@@ -82,9 +84,12 @@ export function Registrar() {
         p={10}>
         <Box width="full">
 
-          <Heading color="coolGray.700">
-            Registrar
-          </Heading>
+          <Center>
+            <Heading color="coolGray.700">
+              Registrar
+            </Heading>
+          </Center>
+
           <FormControl isRequired={requiredEmail} isInvalid={invalidEmail}>
             <FormControl.Label>
               <Text
@@ -95,10 +100,6 @@ export function Registrar() {
               </Text>
             </FormControl.Label>
             <Input
-              type='text'
-              placeholderTextColor="#efefef"
-              bgColor="coolGray.900"
-              color="#efefef"
               placeholder='seu@email.com'
               onChangeText={setEmail}
               onPressIn={resetEmail}
@@ -130,10 +131,7 @@ export function Registrar() {
               </Text>
             </FormControl.Label>
             <Input
-              type='password'
-              placeholderTextColor="#efefef"
-              bgColor="coolGray.900"
-              color="#efefef"
+              secureTextEntry
               placeholder='sua senha'
               onChangeText={setSenha}
               onPressIn={resetSenha}
@@ -166,10 +164,7 @@ export function Registrar() {
               </Text>
             </FormControl.Label>
             <Input
-              type='password'
-              placeholderTextColor="#efefef"
-              bgColor="coolGray.900"
-              color="#efefef"
+              secureTextEntry
               placeholder='confirmar sua senha'
               onChangeText={setConfirmar}
               onPressIn={resetConfirmar}
@@ -196,20 +191,25 @@ export function Registrar() {
           </FormControl>
 
           <Button
+            title='Criar Conta'
             mt="7"
-            colorScheme="warning"
+            bgColor="warning.500"
+            _pressed={{
+              bgColor: "warning.600"
+            }}
             onPress={novoUsuario}
-          >
-            Criar conta
-          </Button>
+          />
 
           <Button
+            title='Já possuo uma conta'
             mt="7"
-            colorScheme="gray"
+            bgColor="gray.500"
+            _pressed={{
+              bgColor: "gray.600"
+            }}
             onPress={openScreen}
-          >
-            Já possuo uma conta
-          </Button>
+          />
+
 
         </Box>
       </VStack>
