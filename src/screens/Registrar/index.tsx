@@ -4,14 +4,16 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Center, Box, Heading, FormControl, VStack, Icon, Image, WarningOutlineIcon, Text } from "native-base";
 import { useNavigation } from '@react-navigation/native';
 import { Input } from '../../components/Input';
-import { Alert } from 'react-native';
 import { Button } from '../../components/Button';
+import { Modal } from '../../components/Modal';
 
 export function Registrar() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmar, setConfirmar] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
   const [invalidEmail, setInvalidEmail] = useState(false);
+  const [isLoading, setIsLoanding] = useState(false);
   const [requiredEmail, setRequiredEmail] = useState(false);
   const [invalidSenha, setInvalidSenha] = useState(false);
   const [requiredSenha, setRequiredSenha] = useState(false);
@@ -20,31 +22,34 @@ export function Registrar() {
 
 
   const novoUsuario = async () => {
-    if (email == "") {
+    if (!email) {
       return setRequiredEmail(true);
     }
     if (/^[A-Za-z0-9_\-\.]+@[A-Za-z0-9_\-\.]{2,}\.[A-Za-z0-9]{2,}(\.[A-Za-z0-9])?$/.test(email) == false) {
       return setInvalidEmail(true);
     }
-    if (senha == "") {
+    if (!senha) {
       return setRequiredSenha(true)
     }
     if (senha.length < 6) {
       return setInvalidSenha(true)
     }
-    if (confirmar == "") {
+    if (!confirmar) {
       return setRequiredConfirmar(true)
     }
-    if (confirmar != senha) {
+    if (confirmar != senha) {    
       return setInvalidConfirmar(true)
     }
+    setIsLoanding(true);
     try {
       await auth()
         .createUserWithEmailAndPassword(email, senha)
-        .then(() => Alert.alert('Conta', 'Conta cadastrada com sucesso!'))
+        .then(() => console.log('Conta', 'Conta cadastrada com sucesso!'))
+        .finally(() => setIsOpen(true))
     } catch (error) {
-      setInvalidEmail(true)
-      setInvalidSenha(true)
+      setInvalidEmail(true);
+      setInvalidSenha(true);
+      setIsLoanding(false);
     }
 
   }
@@ -193,6 +198,7 @@ export function Registrar() {
           <Button
             title='Criar Conta'
             mt="7"
+            isLoading={isLoading}
             bgColor="warning.500"
             _pressed={{
               bgColor: "warning.600"
@@ -213,6 +219,7 @@ export function Registrar() {
 
         </Box>
       </VStack>
+      <Modal/>
     </Center>
   );
 }

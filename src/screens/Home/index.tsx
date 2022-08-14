@@ -6,6 +6,8 @@ import { Input } from '../../components/Input';
 import { Button as CButton} from '../../components/Button';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Curses, CursesProps } from '../../components/Curses';
+import { Alert } from 'react-native';
+import { Modal } from '../../components/Modal';
 
 
 export function Home() {
@@ -13,6 +15,7 @@ export function Home() {
 
   const initialFocusRef = useRef(null);
   const [show, setShow] = useState(false);
+  
   const [curses, setCurses] = useState<CursesProps[]>([{
     id_curso: "123",
     nome_curso: "Tecnologia em análise e desenvolvimento de sistemas",
@@ -33,8 +36,15 @@ export function Home() {
   }
 
   function handleSignOut() {
-    auth().signOut();
+    auth()
+      .signOut()
+      .catch(error => {
+        console.log(error);
+        return Alert.alert('Sair', "Desculpe, ocorreu um erro ao sair.");
+      })
   }
+
+    
 
   return (
     <VStack
@@ -201,6 +211,8 @@ export function Home() {
           onPress={handleSignOut}
         />
       </HStack>
+
+      <Modal/>
     </VStack>
   );
 }

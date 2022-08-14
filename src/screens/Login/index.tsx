@@ -10,11 +10,14 @@ import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { Alert, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Loanding } from '../../components/Loanding';
 
 export function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [invalidEmail, setInvalidEmail] = useState(false);
+  const [isLoading, setIsLoanding] = useState(false);
+  const [loading, setLoanding] = useState(false);
   const [requiredEmail, setRequiredEmail] = useState(false);
   const [invalidSenha, setInvalidSenha] = useState(false);
   const [requiredSenha, setRequiredSenha] = useState(false);
@@ -23,26 +26,34 @@ export function Login() {
 
 
   const logar = async () => {
-    if (check == false) {
-      setInvalidCheck(true)
+    if (check === false) {
+      setInvalidCheck(true);
       return setTimeout(() => setInvalidCheck(false), 5000);
     }
-    if (email == "") {
-      return setRequiredEmail(true)
+    if (!email) {
+      return setRequiredEmail(true);
     }
-    if (senha == "") {
-      return setRequiredSenha(true)
+    if (!senha) {
+      return setRequiredSenha(true);
     }
+    setIsLoanding(true);
     try {
-      await auth().signInWithEmailAndPassword(email, senha)
+      await auth()
+        .signInWithEmailAndPassword(email, senha)
+        setLoanding(true); // fazer o if caso tenha o nome cadastrado aki
     } catch (error) {
-      setInvalidEmail(true)
-      setInvalidSenha(true)
+      setInvalidEmail(true);
+      setInvalidSenha(true);
+      setIsLoanding(false);
     }
   }
 
+  if (loading) {
+    return <Loanding />
+}
+
   const recuperarSenha = async () => {
-    if (email == "") {
+    if (!email) {
       return Alert.alert("Recuperar senha", "É necessário preencher o campo e-mail para recuperar sua senha!")
     }
 
@@ -172,6 +183,7 @@ export function Login() {
               title='Entrar'
               mt="7"
               bgColor="warning.500"
+              isLoading={isLoading}
               onPress={logar}
               _pressed={{
                 bgColor: "warning.600"
