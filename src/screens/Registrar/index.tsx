@@ -11,7 +11,6 @@ export function Registrar() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmar, setConfirmar] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
   const [invalidEmail, setInvalidEmail] = useState(false);
   const [isLoading, setIsLoanding] = useState(false);
   const [requiredEmail, setRequiredEmail] = useState(false);
@@ -25,7 +24,7 @@ export function Registrar() {
     if (!email) {
       return setRequiredEmail(true);
     }
-    if (/^[A-Za-z0-9_\-\.]+@[A-Za-z0-9_\-\.]{2,}\.[A-Za-z0-9]{2,}(\.[A-Za-z0-9])?$/.test(email) == false) {
+    if (/^[A-Za-z0-9_\-\.]+@[A-Za-z0-9_\-\.]{2,}\.[A-Za-z0-9]{2,}(\.[A-Za-z0-9])?$/.test(email) === false) {
       return setInvalidEmail(true);
     }
     if (!senha) {
@@ -45,7 +44,6 @@ export function Registrar() {
       await auth()
         .createUserWithEmailAndPassword(email, senha)
         .then(() => console.log('Conta', 'Conta cadastrada com sucesso!'))
-        .finally(() => setIsOpen(true))
     } catch (error) {
       setInvalidEmail(true);
       setInvalidSenha(true);

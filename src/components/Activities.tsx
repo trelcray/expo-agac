@@ -1,5 +1,6 @@
 import { Box, HStack, Text, VStack, Circle, Pressable, IPressableProps } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
+import { VictoryPie } from 'victory-native';
 
 export type CategoriesProps = {
     id_categoria: string,
@@ -40,17 +41,30 @@ export function Activities({ data, ...rest }: Props) {
                     </Text>
                 </VStack>
 
-                <Box
-                    mr={1}>
-                    <MaterialIcons name='history-toggle-off' size={19} />
-                </Box>
-                <Text
-                    mr={5}
-                    fontSize="sm"
-                    fontWeight="medium"
-                >
-                    {data.horas_max} horas
-                </Text>
+<Box justifyContent="center" alignItems="center" maxW="50px" maxH="50px">
+<VictoryPie
+                    colorScale={[
+                       statusColor,
+                       "gray"
+                    ]}
+                    height={130}
+                    width={130}
+                    animate={{
+                        easing: "bounce"
+                    }}
+                    data={[
+                        { x: "", y: 20 },
+                        { x: "", y: 80 }
+                    ]}
+                    style={{
+                        labels: {
+                            fontWeight: 0,
+                            fontSize: 0
+                        }
+                    }}
+                />
+</Box>
+                
 
             </HStack>
 

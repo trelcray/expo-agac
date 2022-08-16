@@ -1,9 +1,10 @@
 import React, { useRef, useState } from 'react';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { Button, Text, Popover, FormControl, Icon, Divider, FlatList, VStack, HStack, Center, Heading } from 'native-base';
 import { Input } from '../../components/Input';
-import { Button as CButton} from '../../components/Button';
+import { Button as CButton } from '../../components/Button';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Curses, CursesProps } from '../../components/Curses';
 import { Alert } from 'react-native';
@@ -15,7 +16,13 @@ export function Home() {
 
   const initialFocusRef = useRef(null);
   const [show, setShow] = useState(false);
-  
+  const [requiredCurseName, setRequiredCurseName] = useState(false);
+  const [requiredClosing, setRequiredClosing] = useState(false);
+  const [requiredCompletedHours, setRequiredCompletedHours] = useState(false);
+  const [nomeCurso, setNomeCurso] = useState("");
+  const [encerramento, setEncerramento] = useState("");
+  const [horasCompletares, setHorasComplementares] = useState("");
+
   const [curses, setCurses] = useState<CursesProps[]>([{
     id_curso: "123",
     nome_curso: "Tecnologia em análise e desenvolvimento de sistemas",
@@ -31,6 +38,36 @@ export function Home() {
     status: 'closed'
   }]);
 
+  const handleCreateCurse = async () => {
+    if (!nomeCurso) {
+      return setRequiredCurseName(true);
+    }
+    if (!horasCompletares) {
+      return setRequiredCompletedHours(true);
+    }
+    if (!encerramento) {
+      return setRequiredClosing(true);
+    }
+
+    try {
+      firestore()
+        .collection('users')
+        .doc(auth().currentUser.uid)
+        .collection('username')
+        .doc()
+        .collection('cursos')
+        .doc()
+        .set({
+          nome_curso: nomeCurso,
+          encerramento: encerramento,
+          horasCompletares: horasCompletares
+        });
+      () => setShow(!show)
+    } catch (error) {
+      console.log(error, "Erro ao criar a identificação do usuário!")
+    }
+  }
+
   function openScreen() {
     navigation.navigate('Atividade');
   }
@@ -43,8 +80,6 @@ export function Home() {
         return Alert.alert('Sair', "Desculpe, ocorreu um erro ao sair.");
       })
   }
-
-    
 
   return (
     <VStack
@@ -111,24 +146,7 @@ export function Home() {
               color: "#efefef"
             }}>Crie seu Curso</Popover.Header>
             <Popover.Body bgColor="coolGray.700">
-              <FormControl>
-                <FormControl.Label _text={{
-                  fontSize: "xs",
-                  fontWeight: "medium",
-                  color: "#efefef"
-                }}>
-                  Nome do Aluno
-                </FormControl.Label>
-                <Input
-                  placeholder='Digite seu Nome'
-                  InputLeftElement={
-                    <Icon as={<MaterialIcons name="person" />}
-                      size={5}
-                      ml={2}
-                      color="#efefef" />}
-                />
-              </FormControl>
-              <FormControl>
+              <FormControl isRequired={requiredCurseName}>
                 <FormControl.Label _text={{
                   fontSize: "xs",
                   fontWeight: "medium",
@@ -138,6 +156,7 @@ export function Home() {
                 </FormControl.Label>
                 <Input
                   placeholder='seu curso'
+                  onChangeText={setNomeCurso}
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="local-library" />}
                       size={5}
@@ -145,7 +164,7 @@ export function Home() {
                       color="#efefef" />}
                 />
               </FormControl>
-              <FormControl mt="3">
+              <FormControl mt="3" isRequired={requiredCompletedHours}>
                 <FormControl.Label _text={{
                   fontSize: "xs",
                   fontWeight: "medium",
@@ -155,6 +174,7 @@ export function Home() {
                 </FormControl.Label>
                 <Input
                   placeholder='A cargo horária exigida'
+                  onChangeText={setHorasComplementares}
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="timer" />}
                       size={5}
@@ -162,7 +182,7 @@ export function Home() {
                       color="#efefef" />}
                 />
               </FormControl>
-              <FormControl mt="3">
+              <FormControl mt="3" isRequired={requiredClosing}>
                 <FormControl.Label _text={{
                   fontSize: "xs",
                   fontWeight: "medium",
@@ -172,6 +192,7 @@ export function Home() {
                 </FormControl.Label>
                 <Input
                   placeholder='O término do curso'
+                  onChangeText={setEncerramento}
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="timer-off" />}
                       size={5}
@@ -187,7 +208,7 @@ export function Home() {
                 <Button onPress={() => setShow(!show)} colorScheme="coolGray" >
                   Cancelar
                 </Button>
-                <Button onPress={() => setShow(!show)} colorScheme="warning" >
+                <Button onPress={handleCreateCurse} colorScheme="warning" >
                   Salvar
                 </Button>
               </Button.Group>
@@ -212,7 +233,7 @@ export function Home() {
         />
       </HStack>
 
-      <Modal/>
+      <Modal />
     </VStack>
   );
 }
