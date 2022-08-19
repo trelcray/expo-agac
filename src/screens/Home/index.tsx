@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
@@ -8,7 +8,7 @@ import { Button as CButton } from '../../components/Button';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Curses, CursesProps } from '../../components/Curses';
 import { Alert } from 'react-native';
-import { Modal } from '../../components/Modal';
+import { Loanding } from '../../components/Loanding';
 
 
 export function Home() {
@@ -16,60 +16,80 @@ export function Home() {
 
   const initialFocusRef = useRef(null);
   const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [requiredCurseName, setRequiredCurseName] = useState(false);
   const [requiredClosing, setRequiredClosing] = useState(false);
   const [requiredCompletedHours, setRequiredCompletedHours] = useState(false);
   const [nomeCurso, setNomeCurso] = useState("");
   const [encerramento, setEncerramento] = useState("");
-  const [horasCompletares, setHorasComplementares] = useState("");
+  const [horasComplementares, setHorasComplementares] = useState("");
 
-  const [curses, setCurses] = useState<CursesProps[]>([{
-    id_curso: "123",
-    nome_curso: "Tecnologia em análise e desenvolvimento de sistemas",
-    encerramento: "20/02/2022 ás 15:30",
-    horas_complementares: 230,
-    status: 'open'
-  },
-  {
-    id_curso: "124",
-    nome_curso: "Tecnologia em análise e desenvolvimento de sistemas",
-    encerramento: "20/02/2022 ás 15:30",
-    horas_complementares: 230,
-    status: 'closed'
-  }]);
+  const [curses, setCurses] = useState([]);
 
-  const handleCreateCurse = async () => {
+  const handleCreateCurse = () => {
     if (!nomeCurso) {
       return setRequiredCurseName(true);
     }
-    if (!horasCompletares) {
+    if (!horasComplementares) {
       return setRequiredCompletedHours(true);
     }
     if (!encerramento) {
       return setRequiredClosing(true);
     }
-
     try {
-      firestore()
-        .collection('users')
+      const ref = firestore()
+        .collection('usuario')
         .doc(auth().currentUser.uid)
-        .collection('username')
+        .collection('curso')
         .doc()
-        .collection('cursos')
-        .doc()
-        .set({
-          nome_curso: nomeCurso,
-          encerramento: encerramento,
-          horasCompletares: horasCompletares
-        });
-      () => setShow(!show)
+
+      ref.set({
+        id_curso: ref.id,
+        nome_curso: nomeCurso,
+        encerramento: encerramento,
+        horas_complementares: horasComplementares,
+        status: "open"
+
+      });
+      setShow(!show)
     } catch (error) {
       console.log(error, "Erro ao criar a identificação do usuário!")
     }
   }
 
-  function openScreen() {
-    navigation.navigate('Atividade');
+  const getCurse = () => {
+    setIsLoading(true);
+
+    try {
+      const ref = firestore()
+        .collection('usuario')
+        .doc(auth().currentUser.uid)
+        .collection('curso')
+
+      const subscriber = ref.onSnapshot(snapshot => {
+        const data = snapshot.docs.map(doc => {
+          const { nome_curso, encerramento, horas_complementares, status } = doc.data();
+
+          return {
+            id_curso: doc.id,
+            nome_curso,
+            encerramento,
+            horas_complementares,
+            status
+          }
+        });
+        setCurses(data);
+        setIsLoading(false);
+
+      });
+      return subscriber;
+    } catch (error) {
+      console.log(error, "Erro ao pegar os dados do curso!")
+    }
+  }
+
+  function openScreen(id_curso: string) {
+    navigation.navigate('Atividade', { id_curso });
   }
 
   function handleSignOut() {
@@ -81,6 +101,13 @@ export function Home() {
       })
   }
 
+  useEffect(() => {
+    getCurse();
+    return () => {
+      setCurses([]);
+    }
+  }, []);
+
   return (
     <VStack
       px={4}
@@ -88,27 +115,31 @@ export function Home() {
       flex={1}
       bgColor="#E1E1E6"
     >
+      
+      {isLoading
+        ? <Loanding />
+        : <FlatList
+          data={curses}
+          keyExtractor={item => item.id_curso}
+          renderItem={({ item }) => <Curses data={item} onPress={() => openScreen(item.id_curso)} />}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => (
+            <Center>
+              <MaterialCommunityIcons name="chat-alert-outline" size={40} color="gray" />
+              <Text
+                color="black"
+                mt={6}
+                fontSize="xl"
+                textAlign="center"
+              >
+                Você ainda não possui {'\n'}
+                cursos cadastrados!
+              </Text>
+            </Center>
+          )}
+        />
+      }
 
-      <FlatList
-        data={curses}
-        keyExtractor={item => item.id_curso}
-        renderItem={({ item }) => <Curses data={item} onPress={openScreen} />}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={() => (
-          <Center>
-            <MaterialCommunityIcons name="chat-alert-outline" size={40} color="gray" />
-            <Text
-              color="black"
-              mt={6}
-              fontSize="xl"
-              textAlign="center"
-            >
-              Você ainda não possui {'\n'}
-              cursos cadastrados!
-            </Text>
-          </Center>
-        )}
-      />
 
 
       <HStack w="full" justifyContent="center" alignItems="center" mt={4}>
@@ -233,7 +264,6 @@ export function Home() {
         />
       </HStack>
 
-      <Modal />
     </VStack>
   );
 }

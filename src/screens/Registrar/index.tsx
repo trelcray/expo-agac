@@ -1,52 +1,69 @@
 import React, { useState } from 'react';
 import auth from '@react-native-firebase/auth'
+import firestore from '@react-native-firebase/firestore';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Center, Box, Heading, FormControl, VStack, Icon, Image, WarningOutlineIcon, Text } from "native-base";
 import { useNavigation } from '@react-navigation/native';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
-import { Modal } from '../../components/Modal';
 
 export function Registrar() {
   const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmar, setConfirmar] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [invalidEmail, setInvalidEmail] = useState(false);
   const [isLoading, setIsLoanding] = useState(false);
   const [requiredEmail, setRequiredEmail] = useState(false);
-  const [invalidSenha, setInvalidSenha] = useState(false);
-  const [requiredSenha, setRequiredSenha] = useState(false);
+  const [invalidPassword, setInvalidPassword] = useState(false);
+  const [requiredPassword, setRequiredPassword] = useState(false);
   const [invalidConfirmar, setInvalidConfirmar] = useState(false);
   const [requiredConfirmar, setRequiredConfirmar] = useState(false);
+  const [name, setName] = useState("");
+  const [invalidName, setInvalidName] = useState(false);
+  const [requiredName, setRequiredName] = useState(false);
 
 
   const novoUsuario = async () => {
+    if (!name) {
+      return setRequiredName(true);
+    }
+    if (/^(?![ ])(?!.*[ ]{2})((?:e|da|do|das|dos|de|d'|D'|la|las|el|los)\s*?|(?:[A-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð'][^\s]*\s*?)(?!.*[ ]$))+$/.test(name) === false) {
+      return setInvalidName(true);
+    }
     if (!email) {
       return setRequiredEmail(true);
     }
     if (/^[A-Za-z0-9_\-\.]+@[A-Za-z0-9_\-\.]{2,}\.[A-Za-z0-9]{2,}(\.[A-Za-z0-9])?$/.test(email) === false) {
       return setInvalidEmail(true);
     }
-    if (!senha) {
-      return setRequiredSenha(true)
+    if (!password) {
+      return setRequiredPassword(true)
     }
-    if (senha.length < 6) {
-      return setInvalidSenha(true)
+    if (password.length < 6) {
+      return setInvalidPassword(true)
     }
-    if (!confirmar) {
+    if (!confirm) {
       return setRequiredConfirmar(true)
     }
-    if (confirmar != senha) {    
+    if (confirm != password) {
       return setInvalidConfirmar(true)
     }
     setIsLoanding(true);
     try {
       await auth()
-        .createUserWithEmailAndPassword(email, senha)
-        .then(() => console.log('Conta', 'Conta cadastrada com sucesso!'))
+        .createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          const reference = firestore()
+            .collection("usuario")
+            .doc(auth().currentUser.uid);
+          reference.set({
+            email: email,
+            nome: name,
+          })
+        })
     } catch (error) {
       setInvalidEmail(true);
-      setInvalidSenha(true);
+      setInvalidPassword(true);
       setIsLoanding(false);
     }
 
@@ -57,14 +74,19 @@ export function Registrar() {
     setRequiredEmail(false)
   }
 
-  const resetSenha = () => {
-    setInvalidSenha(false)
-    setRequiredSenha(false)
+  const resetPassword = () => {
+    setInvalidPassword(false)
+    setRequiredPassword(false)
   }
 
   const resetConfirmar = () => {
     setInvalidConfirmar(false)
     setRequiredConfirmar(false)
+  }
+
+  const resetName = () => {
+    setInvalidName(false)
+    setRequiredName(false)
   }
 
   const navigation = useNavigation();
@@ -92,6 +114,31 @@ export function Registrar() {
               Registrar
             </Heading>
           </Center>
+
+          <FormControl isRequired={requiredName} isInvalid={invalidName}>
+            <FormControl.Label>
+              <Text
+                color="coolGray.600"
+                fontWeight={'bold'}
+              >
+                Nome Completo
+              </Text>
+            </FormControl.Label>
+
+            <Input
+              placeholder='Informe seu nome completo'
+              onPressIn={resetName}
+              onChangeText={setName}
+            />
+
+            <FormControl.ErrorMessage
+              leftIcon={
+                <WarningOutlineIcon
+                  size="xs"
+                />}>
+              Nome Inválido
+            </FormControl.ErrorMessage>
+          </FormControl>
 
           <FormControl isRequired={requiredEmail} isInvalid={invalidEmail}>
             <FormControl.Label>
@@ -124,7 +171,7 @@ export function Registrar() {
               E-mail Inválido
             </FormControl.ErrorMessage>
           </FormControl>
-          <FormControl isRequired={requiredSenha} isInvalid={invalidSenha}>
+          <FormControl isRequired={requiredPassword} isInvalid={invalidPassword}>
             <FormControl.Label>
               <Text
                 color="coolGray.600"
@@ -136,8 +183,8 @@ export function Registrar() {
             <Input
               secureTextEntry
               placeholder='sua senha'
-              onChangeText={setSenha}
-              onPressIn={resetSenha}
+              onChangeText={setPassword}
+              onPressIn={resetPassword}
               InputLeftElement={
                 <Icon
                   as={<MaterialIcons name="lock" />}
@@ -169,7 +216,7 @@ export function Registrar() {
             <Input
               secureTextEntry
               placeholder='confirmar sua senha'
-              onChangeText={setConfirmar}
+              onChangeText={setConfirm}
               onPressIn={resetConfirmar}
               InputLeftElement={
                 <Icon
@@ -206,7 +253,7 @@ export function Registrar() {
 
           <Button
             title='Já possuo uma conta'
-            mt="7"
+            mt="5"
             bgColor="gray.500"
             _pressed={{
               bgColor: "gray.600"
@@ -217,7 +264,6 @@ export function Registrar() {
 
         </Box>
       </VStack>
-      <Modal/>
     </Center>
   );
 }

@@ -1,32 +1,93 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 import { Box, Button, Center, CheckIcon, FlatList, FormControl, HStack, Icon, Popover, Select, Text, VStack, WarningOutlineIcon } from 'native-base';
 import { Input } from '../../components/Input';
+import { dateFormat } from '../../utils/firestoreDateFormat';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { ActivitiesProps, DetailActivities } from '../../components/DetailActivities';
 
 type RouteParams = {
-  id_atividade: string;
+  id_categoria: string;
+  id_curso: string;
 }
 
 export function Details() {
   const [show, setShow] = useState(false);
-  const [activities, setActivities] = useState<ActivitiesProps[]>([{
-    id_atividade: "123",
-    nome_atividade: "JIC 2021",
-    horas_completas: 4,
-    URLcertificado: "blablabla"
-  },
-  {
-    id_atividade: "124",
-    nome_atividade: "JIC 2022",
-    horas_completas: 3,
-    URLcertificado: "blablabla2"
-  }]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activityName, setActivityName] = useState("");
+  const [completHours, setCompletHours] = useState("");
+  const [certificateUrl, setCertificateUrl] = useState("");
+  const [activities, setActivities] = useState<ActivitiesProps[]>([]);
   const initialFocusRef = useRef(null);
 
   const route = useRoute();
-  const { id_atividade } = route.params as RouteParams;
+  const { id_categoria, id_curso} = route.params as RouteParams;
+
+  const handleCreateActivities = () => {
+    const ref = firestore()
+      .collection('usuario')
+      .doc(auth().currentUser.uid)
+      .collection('curso')
+      .doc(id_curso)
+      .collection('categoria')
+      .doc(id_categoria)
+      .collection('atividade')
+      .doc()
+
+    ref.set({
+      id_atividade: ref.id,
+      nome_atividade: activityName,
+      horas_completas: completHours,
+      atividade_inicio: firestore.FieldValue.serverTimestamp(),
+      URLcertificado: certificateUrl
+    });
+    setShow(!show)
+  }
+
+  const getActivities = () => {
+    setIsLoading(true);
+
+    try {
+      const ref = firestore()
+        .collection('usuario')
+        .doc(auth().currentUser.uid)
+        .collection('curso')
+        .doc(id_curso)
+        .collection('categoria')
+        .doc(id_categoria)
+        .collection('atividade')
+
+      const subscriber = ref.onSnapshot(snapshot => {
+        const data = snapshot.docs.map(doc => {
+          const { id_atividade, nome_atividade, horas_completas, atividade_inicio, URLcertificado } = doc.data();
+
+          return {
+            id_atividade,
+            nome_atividade,
+            horas_completas,
+            atividade_inicio: dateFormat(atividade_inicio),
+            URLcertificado
+          }
+        });
+        setActivities(data);
+        setIsLoading(false);
+
+      });
+      return subscriber;
+
+    } catch (error) {
+      console.log(error, "Erro ao pegar os dados da categoria!")
+    }
+  }
+
+  useEffect(() => {
+    getActivities();
+    return () => {
+      setActivities([]); 
+    };
+  }, []);
 
   return (
     <VStack
@@ -41,7 +102,7 @@ export function Details() {
             p={2}
             rounded="2xl"
           >
-            <Text fontWeight={800} pb={3} color="white">Participação em Eventos</Text>
+            <Text fontWeight={800} pb={3} color="white">{id_categoria}</Text>
             <Text fontWeight={500} color="white">Organização de eventos como semanas acadêmicas, seminários,
               simpósios, congressos, encontros, jornadas ou mesas redondas.
             </Text>
@@ -120,6 +181,7 @@ export function Details() {
                 </FormControl.Label>
                 <Input
                   placeholder='Nome da atividade'
+                  onChangeText={setActivityName}
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="pending-actions" />}
                       size={5}
@@ -138,6 +200,7 @@ export function Details() {
                 </FormControl.Label>
                 <Input 
                   placeholder='A cargo horária completa'
+                  onChangeText={setCompletHours}
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="timer" />}
                       size={5}
@@ -145,26 +208,26 @@ export function Details() {
                       color="#efefef" />}
                 />
               </FormControl>
-              <FormControl mt={3} isRequired isInvalid={false}>
+
+              <FormControl mt="3">
                 <FormControl.Label _text={{
                   fontSize: "xs",
                   fontWeight: "medium",
                   color: "#efefef"
-                }}>Selecione a Categoria</FormControl.Label>
-                <Select minWidth="200" accessibilityLabel="Choose Service" placeholder="Choose Service" _selectedItem={{
-                  bgColor: "teal.600",
-                  endIcon: <CheckIcon size={5} />
-                }} >
-                  <Select.Item label="UX Research" value="ux" />
-                  <Select.Item label="Web Development" value="web" />
-                  <Select.Item label="Cross Platform Development" value="cross" />
-                  <Select.Item label="UI Designing" value="ui" />
-                  <Select.Item label="Backend Development" value="backend" />
-                </Select>
-                <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-                  Selecione uma categoria!
-                </FormControl.ErrorMessage>
+                }}>
+                  URL do certificado
+                </FormControl.Label>
+                <Input 
+                  placeholder='Identificador do certificado'
+                  onChangeText={setCertificateUrl}
+                  InputLeftElement={
+                    <Icon as={<MaterialCommunityIcons name="certificate" />}
+                      size={5}
+                      ml={2}
+                      color="#efefef" />}
+                />
               </FormControl>
+
             </Popover.Body>
             <Popover.Footer bgColor="coolGray.700">
               <Button.Group>
@@ -175,7 +238,7 @@ export function Details() {
                   Cancelar
                 </Button>
                 <Button
-                  onPress={() => setShow(!show)}
+                  onPress={handleCreateActivities}
                   bgColor="warning.600"
                   _pressed={{
                     bgColor: "warning.700"

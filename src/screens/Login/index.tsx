@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import auth from '@react-native-firebase/auth'
-import { MaterialIcons } from '@expo/vector-icons';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   Center, Box, Heading, FormControl,
   VStack, Icon, Checkbox, WarningOutlineIcon,
@@ -21,15 +22,24 @@ export function Login() {
   const [requiredEmail, setRequiredEmail] = useState(false);
   const [invalidSenha, setInvalidSenha] = useState(false);
   const [requiredSenha, setRequiredSenha] = useState(false);
-  const [check, setCheck] = useState(false);
-  const [invalidCheck, setInvalidCheck] = useState(false);
+
+  GoogleSignin.configure({
+    webClientId: '36498256399-v5he494sfo8n0g0i2qio5smgdjf65jn4.apps.googleusercontent.com',
+  });
+
+  async function onGoogleButtonPress() {
+    // Get the users ID token
+    const { idToken } = await GoogleSignin.signIn();
+  
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+  
+    // Sign-in the user with the credential
+    return auth().signInWithCredential(googleCredential);
+  }
 
 
   const logar = async () => {
-    if (check === false) {
-      setInvalidCheck(true);
-      return setTimeout(() => setInvalidCheck(false), 5000);
-    }
     if (!email) {
       return setRequiredEmail(true);
     }
@@ -163,17 +173,12 @@ export function Login() {
 
             </FormControl>
 
-            <FormControl isInvalid={invalidCheck}>
+            <FormControl>
 
-              <Checkbox id='checkbox' value='agree' onChange={setCheck}
+              <Checkbox id='checkbox' isChecked value='agree' isDisabled
                 mt={5}>
                 Concordo com a politica de segurança
               </Checkbox>
-
-              <FormControl.ErrorMessage
-                leftIcon={<WarningOutlineIcon size="xs" />}>
-                Aceite os termos de uso!
-              </FormControl.ErrorMessage>
 
             </FormControl>
 
@@ -188,6 +193,16 @@ export function Login() {
               _pressed={{
                 bgColor: "warning.600"
               }}
+            />
+            <Button
+              leftIcon={<MaterialCommunityIcons name="google" size={24} color="white" />}
+              title="Entrar com Google"
+              mt={5}
+              bgColor="gray.500"
+              _pressed={{
+                bgColor: "gray.600"
+              }}
+              onPress={() => onGoogleButtonPress()}
             />
 
           </Box>
