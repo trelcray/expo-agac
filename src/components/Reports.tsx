@@ -1,31 +1,9 @@
 import React from 'react';
 import { Box, Center, Flex, Spacer, Text } from 'native-base';
 
-export function Relatorio() {
-
-
+export function Reports() {
   return (
-    <Box
-      safeArea
-      height="full"
-      bgColor="#E1E1E6"
-    >
-      <Box my={2}>
-        <Center
-          mx={4}
-          bgColor="warning.600"
-          p={2}
-          rounded="2xl"
-        >
-          <Text fontWeight={800} py={2} color="white">TADS</Text>
-          <Text fontWeight={600} pb={2} color="white">
-            Discente: Thalis Zambarda
-          </Text>
-        </Center>
-
-      </Box>
-
-      <Box my={2}>
+    <Box my={2}>
         <Center
           mx={4}
           bgColor="white"
@@ -57,6 +35,5 @@ export function Relatorio() {
           </Text>
         </Center>
       </Box>
-    </Box>
   );
 }

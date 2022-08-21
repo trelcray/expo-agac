@@ -10,3 +10,14 @@ export function dateFormat(timestamp: FirebaseFirestoreTypes.Timestamp){
         return `${day} às ${hour}`
     }
 }
+
+export function FormattedDate(timestamp: FirebaseFirestoreTypes.Timestamp){
+    if(timestamp){
+        const date = new Date(timestamp.toDate());
+
+        const day = date.getDate().toString().padStart(2, "0") + "/" + (date.getMonth().toString().padStart(2, "0"))  + "/" + date.getFullYear();
+
+        return day
+    }
+}
+

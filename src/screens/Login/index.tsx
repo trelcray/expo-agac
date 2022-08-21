@@ -15,7 +15,7 @@ import { Loanding } from '../../components/Loanding';
 
 export function Login() {
   const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
+  const [password, setPassword] = useState('');
   const [invalidEmail, setInvalidEmail] = useState(false);
   const [isLoading, setIsLoanding] = useState(false);
   const [loading, setLoanding] = useState(false);
@@ -39,17 +39,17 @@ export function Login() {
   }
 
 
-  const logar = async () => {
+  const login = async () => {
     if (!email) {
       return setRequiredEmail(true);
     }
-    if (!senha) {
+    if (!password) {
       return setRequiredSenha(true);
     }
     setIsLoanding(true);
     try {
       await auth()
-        .signInWithEmailAndPassword(email, senha)
+        .signInWithEmailAndPassword(email, password)
         setLoanding(true); // fazer o if caso tenha o nome cadastrado aki
     } catch (error) {
       setInvalidEmail(true);
@@ -62,7 +62,7 @@ export function Login() {
     return <Loanding />
 }
 
-  const recuperarSenha = async () => {
+  const recoverPassword = async () => {
     if (!email) {
       return Alert.alert("Recuperar senha", "É necessário preencher o campo e-mail para recuperar sua senha!")
     }
@@ -81,7 +81,7 @@ export function Login() {
     setRequiredEmail(false)
   }
 
-  const resetSenha = () => {
+  const resetPassword = () => {
     setInvalidSenha(false)
     setRequiredSenha(false)
   }
@@ -90,7 +90,7 @@ export function Login() {
   const navigation = useNavigation();
 
   function openScreen() {
-    navigation.navigate('Registrar');
+    navigation.navigate('Register');
   }
 
   return (
@@ -153,8 +153,8 @@ export function Login() {
               <Input
                 placeholder='sua senha'
                 secureTextEntry
-                onChangeText={setSenha}
-                onPressIn={resetSenha}
+                onChangeText={setPassword}
+                onPressIn={resetPassword}
                 InputLeftElement={
                   <Icon
                     as={<MaterialIcons
@@ -189,7 +189,7 @@ export function Login() {
               mt="7"
               bgColor="warning.500"
               isLoading={isLoading}
-              onPress={logar}
+              onPress={login}
               _pressed={{
                 bgColor: "warning.600"
               }}
@@ -223,7 +223,7 @@ export function Login() {
             </HStack>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={recuperarSenha} >
+          <TouchableOpacity onPress={recoverPassword} >
             <HStack>
               <Icon as={<MaterialIcons name="mail" />}
                 size={6}

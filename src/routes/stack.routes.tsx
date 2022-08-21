@@ -5,17 +5,16 @@ const { Screen, Navigator } = createNativeStackNavigator();
 const stack = createNativeStackNavigator();
 
 import { Home } from '../screens/Home';
-import { Atividade } from '../screens/Atividade';
-import { Details } from '../screens/Details';
-import { Relatorio } from '../screens/Relatorio';
+import { Activitie } from '../screens/Activitie';
+import { Detail } from '../screens/Detail';
 import { Login } from '../screens/Login';
-import { Registrar } from '../screens/Registrar';
+import { Register } from '../screens/Register';
 
 export function AuthRoutes() {
     return (
         <Navigator>
             <Screen name='Login' options={{ headerShown: false }} component={Login} />
-            <Screen name='Registrar' options={{ headerShown: false }} component={Registrar} />
+            <Screen name='Register' options={{ headerShown: false }} component={Register} />
         </Navigator>
     )
 }
@@ -35,9 +34,8 @@ export function UserRoutes() {
             }}>
 
             <stack.Screen name='Home' options={{ title: 'Seus Cursos' }} component={Home} />            
-            <stack.Screen name='Atividade' options={{ title: 'Suas Atividades' }} component={Atividade} />
-            <stack.Screen name='Details' options={{ title: 'Detalhes das Atividades' }} component={Details} />
-            <stack.Screen name='Relatorio' options={{ title: 'Relatório do Curso' }} component={Relatorio} />
+            <stack.Screen name='Activitie' options={{ title: 'Suas Atividades' }} component={Activitie} />
+            <stack.Screen name='Details' options={{ title: 'Detalhes das Atividades' }} component={Detail} />
 
         </stack.Navigator>
     )

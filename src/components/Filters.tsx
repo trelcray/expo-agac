@@ -3,12 +3,12 @@ import { Button, IButtonProps, Text } from 'native-base';
 type Props = IButtonProps & {
     title: string,
     isActive?: boolean,
-    type: "open" | "closed";
+    type: "activitie" | "report";
 }
 
 export function Filters({ title, isActive = false, type, ...rest}: Props) {
 
-    const colorType = type === 'open' ? "warning.500" : "red.500";
+    const colorType = type === 'activitie' ? "warning.500" : "success.500";
 
   return (
     <Button

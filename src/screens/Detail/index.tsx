@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { Box, Button, Center, CheckIcon, FlatList, FormControl, HStack, Icon, Popover, Select, Text, VStack, WarningOutlineIcon } from 'native-base';
+import { Box, Button, Center, FlatList, FormControl, HStack, Icon, Popover, Text, VStack } from 'native-base';
 import { Input } from '../../components/Input';
 import { dateFormat } from '../../utils/firestoreDateFormat';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -13,7 +13,7 @@ type RouteParams = {
   id_curso: string;
 }
 
-export function Details() {
+export function Detail() {
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [activityName, setActivityName] = useState("");

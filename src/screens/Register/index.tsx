@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 
-export function Registrar() {
+export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -16,14 +16,14 @@ export function Registrar() {
   const [requiredEmail, setRequiredEmail] = useState(false);
   const [invalidPassword, setInvalidPassword] = useState(false);
   const [requiredPassword, setRequiredPassword] = useState(false);
-  const [invalidConfirmar, setInvalidConfirmar] = useState(false);
-  const [requiredConfirmar, setRequiredConfirmar] = useState(false);
+  const [invalidConfirm, setInvalidConfirm] = useState(false);
+  const [requiredConfirm, setRequiredConfirm] = useState(false);
   const [name, setName] = useState("");
   const [invalidName, setInvalidName] = useState(false);
   const [requiredName, setRequiredName] = useState(false);
 
 
-  const novoUsuario = async () => {
+  const handleCreateUser = async () => {
     if (!name) {
       return setRequiredName(true);
     }
@@ -43,10 +43,10 @@ export function Registrar() {
       return setInvalidPassword(true)
     }
     if (!confirm) {
-      return setRequiredConfirmar(true)
+      return setRequiredConfirm(true)
     }
     if (confirm != password) {
-      return setInvalidConfirmar(true)
+      return setInvalidConfirm(true)
     }
     setIsLoanding(true);
     try {
@@ -79,9 +79,9 @@ export function Registrar() {
     setRequiredPassword(false)
   }
 
-  const resetConfirmar = () => {
-    setInvalidConfirmar(false)
-    setRequiredConfirmar(false)
+  const resetConfirm = () => {
+    setInvalidConfirm(false)
+    setRequiredConfirm(false)
   }
 
   const resetName = () => {
@@ -204,7 +204,7 @@ export function Registrar() {
             </FormControl.ErrorMessage>
           </FormControl>
 
-          <FormControl isRequired={requiredConfirmar} isInvalid={invalidConfirmar}>
+          <FormControl isRequired={requiredConfirm} isInvalid={invalidConfirm}>
             <FormControl.Label>
               <Text
                 color="coolGray.600"
@@ -217,7 +217,7 @@ export function Registrar() {
               secureTextEntry
               placeholder='confirmar sua senha'
               onChangeText={setConfirm}
-              onPressIn={resetConfirmar}
+              onPressIn={resetConfirm}
               InputLeftElement={
                 <Icon
                   as={
@@ -248,7 +248,7 @@ export function Registrar() {
             _pressed={{
               bgColor: "warning.600"
             }}
-            onPress={novoUsuario}
+            onPress={handleCreateUser}
           />
 
           <Button

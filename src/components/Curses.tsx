@@ -16,7 +16,7 @@ type Props = IPressableProps & {
 export function Curses({ data, ...rest }: Props) {
     
     const statusColor = data.status === 'open' ? "#ea580c" : "#15803d";
-
+    
     return (
         <Pressable {...rest}>
         <HStack
