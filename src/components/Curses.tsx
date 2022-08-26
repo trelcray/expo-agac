@@ -18,10 +18,9 @@ export function Curses({ data, ...rest }: Props) {
     const statusColor = data.status === 'open' ? "#ea580c" : "#15803d";
     
     return (
-        <Pressable {...rest}>
+        <Pressable mt={4} {...rest}>
         <HStack
             bgColor="white"
-            mt={4}
             alignItems="center"
             justifyContent="space-between"
             rounded="sm"

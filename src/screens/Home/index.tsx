@@ -7,7 +7,7 @@ import { Button, Text, Popover, FormControl, Icon, Divider, FlatList, VStack, HS
 import { Input } from '../../components/Input';
 import { Button as CButton } from '../../components/Button';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Curses, CursesProps } from '../../components/Curses';
+import { Curses } from '../../components/Curses';
 import { Alert, TouchableOpacity } from 'react-native';
 import { Loanding } from '../../components/Loanding';
 import { FormattedDate } from '../../utils/firestoreDateFormat';
@@ -22,7 +22,7 @@ export function Home() {
   const [requiredCurseName, setRequiredCurseName] = useState(false);
   const [requiredClosure, setRequiredClosure] = useState(false);
   const [requiredCompletedHours, setRequiredCompletedHours] = useState(false);
-  const [invalidClosure, setInvalidClosure] = useState(false);
+  const [invalidCompletedHours, setInvalidCompletedHours] = useState(false);
   const [nameCurse, setNameCurse] = useState("");
   const [closure, setClosure] = useState(new Date(Date.now()));
   const [hoursComplementary, setHoursComplementary] = useState("");
@@ -38,11 +38,12 @@ export function Home() {
     if (!hoursComplementary) {
       return setRequiredCompletedHours(true);
     }
-    if (!closure) {
+    if (/^-?\d*\.?\d*$/.test(hoursComplementary) === false) {
+      return setInvalidCompletedHours(true);
+    }
+    if (!dateFormat) {
       return setRequiredClosure(true);
     }
-
-   
     try {
       const ref = firestore()
         .collection('usuario')
@@ -58,10 +59,25 @@ export function Home() {
         status: "open"
 
       });
+      setHoursComplementary("")
+      setNameCurse("")
+      setDateFormat("")
       setShow(!show)
     } catch (error) {
       console.log(error, "Erro ao criar a identificação do usuário!")
     }
+  }
+
+  const resetNameCurse = () => {
+    setRequiredCurseName(false);
+  }
+  const resetHoursComplementary = () => {
+    setRequiredCompletedHours(false);
+    setInvalidCompletedHours(false);
+  }
+  const HandleIspickerShow = () => {
+    setRequiredClosure(false);
+    setIsPickerShow(true)
   }
 
   const getCurse = () => {
@@ -97,12 +113,12 @@ export function Home() {
 
   const onChange = (event, selectedDated) => {
     if (selectedDated) {
-        const formattedDate = closure.getDate().toString().padStart(2, "0") + "/" + (closure.getMonth().toString().padStart(2, "0"))  + "/" + closure.getFullYear()
-        setClosure(selectedDated);
-        setDateFormat(String(formattedDate));
+      const formattedDate = closure.getDate().toString().padStart(2, "0") + "/" + ((closure.getMonth() + 1).toString().padStart(2, "0")) + "/" + closure.getFullYear()
+      setClosure(selectedDated);
+      setDateFormat(String(formattedDate));
     }
     setIsPickerShow(false);
-}
+  }
 
   function openScreen(id_curso: string) {
     navigation.navigate('Activitie', { id_curso });
@@ -119,9 +135,6 @@ export function Home() {
 
   useEffect(() => {
     getCurse();
-    return () => {
-      setCurses([]);
-    }
   }, []);
 
   return (
@@ -131,7 +144,7 @@ export function Home() {
       flex={1}
       bgColor="#E1E1E6"
     >
-      
+
       {isLoading
         ? <Loanding />
         : <FlatList
@@ -203,6 +216,7 @@ export function Home() {
                 </FormControl.Label>
                 <Input
                   placeholder='seu curso'
+                  onPressIn={resetNameCurse}
                   onChangeText={setNameCurse}
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="local-library" />}
@@ -211,7 +225,7 @@ export function Home() {
                       color="#efefef" />}
                 />
               </FormControl>
-              <FormControl mt="3" isRequired={requiredCompletedHours}>
+              <FormControl mt="3" isRequired={requiredCompletedHours} isInvalid={invalidCompletedHours}>
                 <FormControl.Label _text={{
                   fontSize: "xs",
                   fontWeight: "medium",
@@ -221,6 +235,7 @@ export function Home() {
                 </FormControl.Label>
                 <Input
                   placeholder='A cargo horária exigida'
+                  onPressIn={resetHoursComplementary}
                   onChangeText={setHoursComplementary}
                   InputLeftElement={
                     <Icon as={<MaterialIcons name="timer" />}
@@ -228,8 +243,15 @@ export function Home() {
                       ml={2}
                       color="#efefef" />}
                 />
+                <FormControl.ErrorMessage
+                  leftIcon={
+                    <WarningOutlineIcon
+                      size="xs"
+                    />}>
+                  Cargo horária inválida!
+                </FormControl.ErrorMessage>
               </FormControl>
-              <FormControl mt="3" isRequired={requiredClosure} isInvalid={invalidClosure}>
+              <FormControl mt="3" isRequired={requiredClosure}>
                 <FormControl.Label _text={{
                   fontSize: "xs",
                   fontWeight: "medium",
@@ -237,24 +259,24 @@ export function Home() {
                 }}>
                   Encerramento do Curso
                 </FormControl.Label>
-                <TouchableOpacity onPress={() => setIsPickerShow(true)}>
-                <Input
+                <TouchableOpacity onPress={HandleIspickerShow}>
+                  <Input
                     editable={false}
                     placeholder='O término do curso'
                     value={dateFormat}
                     InputLeftElement={
-                        <Icon as={<MaterialIcons name="date-range" size={24} color="black" />}
-                            size={5}
-                            ml={2}
-                            color="#efefef"
-                        />
-                    } 
-                    />
+                      <Icon as={<MaterialIcons name="date-range" size={24} color="black" />}
+                        size={5}
+                        ml={2}
+                        color="#efefef"
+                      />
+                    }
+                  />
 
-            </TouchableOpacity>
+                </TouchableOpacity>
 
-            {isPickerShow && (
-                <DateTimePicker
+                {isPickerShow && (
+                  <DateTimePicker
                     testID="dateTimePicker"
                     display="calendar"
                     value={closure}
@@ -262,19 +284,19 @@ export function Home() {
                     is24Hour={true}
                     minimumDate={new Date()}
                     onChange={onChange}
-                />
-            )}
+                  />
+                )}
                 <FormControl.ErrorMessage
-              leftIcon={
-                <WarningOutlineIcon
-                  size="xs"
-                />}>
-              Data inválida
-            </FormControl.ErrorMessage>
-           
+                  leftIcon={
+                    <WarningOutlineIcon
+                      size="xs"
+                    />}>
+                  Data inválida
+                </FormControl.ErrorMessage>
+
               </FormControl>
             </Popover.Body>
-            
+
             <Popover.Footer bgColor="coolGray.700">
               <Button.Group>
                 <Button onPress={() => setShow(!show)} colorScheme="coolGray" >

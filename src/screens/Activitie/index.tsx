@@ -1,15 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { Button, Box, Text, Popover, FormControl, Icon, Center, HStack, FlatList, Heading } from 'native-base';
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Button, Box, Text, Popover, FormControl, Icon, Center, HStack, FlatList, Heading, Divider, WarningOutlineIcon } from 'native-base';
+import { MaterialIcons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import { Input } from '../../components/Input';
 import { VictoryPie } from 'victory-native';
 import { Filters } from '../../components/Filters';
 import { Activities, CategoriesProps } from '../../components/Activities';
 import { Reports } from '../../components/Reports';
 import { Loanding } from '../../components/Loanding';
+import { Button as CButton } from '../../components/Button'
+import { TouchableOpacity } from 'react-native';
 
 type RouteParams = {
   id_curso: string;
@@ -26,13 +29,41 @@ export function Activitie() {
   const [nameCategory, setNameCategory] = useState("");
   const [maxHours, setMaxHours] = useState("");
   const [description, setDescription] = useState("");
+  const [requiredNameCategory, setRequiredNameCategory] = useState(false);
+  const [requiredMaxHours, setRequiredMaxHours] = useState(false);
+  const [requiredDescription, setRequiredDescription] = useState(false);
+  const [invalidMaxHours, setInvalidMaxHours] = useState(false);
   const [show, setShow] = useState(false);
+  const [isShow, setIsShow] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [statusSelected, setStatusSelected] = useState<"activitie" | "report">("activitie");
   const [categories, setCategories] = useState<CategoriesProps[]>([]);
+  const [requiredCurseName, setRequiredCurseName] = useState(false);
+  const [requiredClosure, setRequiredClosure] = useState(false);
+  const [requiredCompletedHours, setRequiredCompletedHours] = useState(false);
+  const [nameCurse, setNameCurse] = useState("");
+  const [closure, setClosure] = useState(new Date(Date.now()));
+  const [hoursComplementary, setHoursComplementary] = useState("");
+  const [invalidCompletedHours, setInvalidCompletedHours] = useState(false);
+  const [isPickerShow, setIsPickerShow] = useState(false);
+  const [dateFormat, setDateFormat] = useState("");
 
   const handleCreateCategories = () => {
-    const ref = firestore()
+    try {
+      if (!nameCategory) {
+        return setRequiredNameCategory(true);
+      }
+      if (!maxHours) {
+        return setRequiredMaxHours(true);
+      }
+      if (/^-?\d*\.?\d*$/.test(maxHours) === false) {
+        return setInvalidMaxHours(true);
+      }
+      if (!description) {
+        return setRequiredDescription(true);
+      }
+
+      const ref = firestore()
       .collection('usuario')
       .doc(auth().currentUser.uid)
       .collection('curso')
@@ -42,12 +73,56 @@ export function Activitie() {
 
     ref.set({
       id_categoria: ref.id,
+      id_curso: id_curso,
       nome_categoria: nameCategory,
       horas_max: maxHours,
       descricao: description,
       status: "open"
     });
-    setShow(!show)
+    setNameCategory("");
+    setMaxHours("");
+    setDescription("");
+    setShow(!show);
+    } catch (error) {
+      console.log(error, "erro ao criar as categorias")
+    }
+    
+  }
+
+  const handleEditCurse = () => {
+    if (!nameCurse) {
+      return setRequiredCurseName(true);
+    }
+    if (!hoursComplementary) {
+      return setRequiredCompletedHours(true);
+    }
+    if (!closure) {
+      return setRequiredClosure(true);
+    }
+
+
+    try {
+      const ref = firestore()
+        .collection('usuario')
+        .doc(auth().currentUser.uid)
+        .collection('curso')
+        .doc(id_curso)
+
+      ref.update({
+        id_curso: ref.id,
+        nome_curso: nameCurse,
+        encerramento: closure,
+        horas_complementares: hoursComplementary,
+        status: "open"
+
+      });
+      setHoursComplementary("")
+      setNameCurse("")
+      setDateFormat("")
+      setIsShow(false)
+    } catch (error) {
+      console.log(error, "Erro ao editar o curso!")
+    }
   }
 
   const getCategories = () => {
@@ -63,10 +138,11 @@ export function Activitie() {
 
       const subscriber = ref.onSnapshot(snapshot => {
         const data = snapshot.docs.map(doc => {
-          const { id_categoria, nome_categoria, horas_max, descricao, status } = doc.data();
+          const { id_categoria, id_curso, nome_categoria, horas_max, descricao, status } = doc.data();
 
           return {
             id_categoria,
+            id_curso,
             nome_categoria,
             horas_max,
             descricao,
@@ -84,16 +160,60 @@ export function Activitie() {
     }
   }
 
+  const HandleRemoveCurse = () => {
+    try {
+      firestore()
+        .collection('usuario')
+        .doc(auth().currentUser.uid)
+        .collection('curso')
+        .doc(id_curso)
+        .delete()
+        .finally(() => navigation.navigate('Home'))
+    } catch (error) {
+      console.log(error, "erro ao excluir o curso")
+    }
+  }
+
+  const onChange = (event, selectedDated) => {
+    if (selectedDated) {
+      const formattedDate = closure.getDate().toString().padStart(2, "0") + "/" + (closure.getMonth().toString().padStart(2, "0")) + "/" + closure.getFullYear()
+      setClosure(selectedDated);
+      setDateFormat(String(formattedDate));
+    }
+    setIsPickerShow(false);
+  }
 
   function openScreen(id_categoria: string, id_curso: string) {
     navigation.navigate('Details', { id_categoria, id_curso });
   }
 
+  const resetNameCategory = () => {
+    setRequiredNameCategory(false);
+  }
+
+  const resetMaxHours = () => {
+    setRequiredMaxHours(false);
+    setInvalidMaxHours(false);
+  }
+  const resetDescription = () => {
+    setRequiredDescription(false);
+  }
+
+  const resetNameCurse = () => {
+    setRequiredCurseName(false);
+  }
+  const resetHoursComplementary = () => {
+    setRequiredCompletedHours(false);
+    setInvalidCompletedHours(false);
+  }
+  const HandleIspickerShow = () => {
+    setRequiredClosure(false);
+    setIsPickerShow(true)
+  }
+
+
   useEffect(() => {
     getCategories();
-    return () => {
-      setCategories([]);
-    }
   }, []);
 
   return (
@@ -167,7 +287,7 @@ export function Activitie() {
                 <FlatList
                   data={categories}
                   keyExtractor={item => item.id_categoria}
-                  renderItem={({ item }) => <Activities data={item} onPress={() => openScreen(item.id_categoria, item.id_categoria)} />}
+                  renderItem={({ item }) => <Activities data={item} onPress={() => openScreen(item.id_categoria, item.id_curso)} />}
                   showsVerticalScrollIndicator={false}
                   ListEmptyComponent={() => (
                     <Center>
@@ -208,7 +328,7 @@ export function Activitie() {
                     color="white"
                     fontSize="md"
                   >
-                    Criar Categoria
+                    Categoria
                   </Heading>
                 </Button>
               );
@@ -221,9 +341,9 @@ export function Activitie() {
                 }
                 <Popover.Header bgColor="coolGray.700" _text={{
                   color: "#efefef"
-                }}>Crie seu Curso</Popover.Header>
+                }}>Crie sua Categoria</Popover.Header>
                 <Popover.Body bgColor="coolGray.700">
-                  <FormControl>
+                  <FormControl isRequired={requiredNameCategory}>
                     <FormControl.Label _text={{
                       fontSize: "xs",
                       fontWeight: "medium",
@@ -233,6 +353,7 @@ export function Activitie() {
                     </FormControl.Label>
                     <Input
                       placeholder='Nome da categoria'
+                      onPressIn={resetNameCategory}
                       onChangeText={setNameCategory}
                       InputLeftElement={
                         <Icon as={<MaterialIcons name="category" />}
@@ -241,7 +362,7 @@ export function Activitie() {
                           color="#efefef" />}
                     />
                   </FormControl>
-                  <FormControl mt="3">
+                  <FormControl mt="3" isRequired={requiredMaxHours} isInvalid={invalidMaxHours}>
                     <FormControl.Label _text={{
                       fontSize: "xs",
                       fontWeight: "medium",
@@ -251,6 +372,7 @@ export function Activitie() {
                     </FormControl.Label>
                     <Input
                       placeholder='O limite de Horas'
+                      onPressIn={resetMaxHours}
                       onChangeText={setMaxHours}
                       InputLeftElement={
                         <Icon as={<MaterialIcons name="timer-off" />}
@@ -258,8 +380,15 @@ export function Activitie() {
                           ml={2}
                           color="#efefef" />}
                     />
+                    <FormControl.ErrorMessage
+                      leftIcon={
+                        <WarningOutlineIcon
+                          size="xs"
+                        />}>
+                      Cargo Horária inválida
+                    </FormControl.ErrorMessage>
                   </FormControl>
-                  <FormControl mt="3">
+                  <FormControl mt="3" isRequired={requiredDescription}>
                     <FormControl.Label _text={{
                       fontSize: "xs",
                       fontWeight: "medium",
@@ -269,6 +398,7 @@ export function Activitie() {
                     </FormControl.Label>
                     <Input
                       placeholder='Critérios da categoria'
+                      onPressIn={resetDescription}
                       onChangeText={setDescription}
                       InputLeftElement={
                         <Icon as={<MaterialIcons name="description" />}
@@ -298,8 +428,153 @@ export function Activitie() {
               </Popover.Content>
             </Popover>
 
+            <Divider orientation="vertical" bgColor={"coolGray.700"} thickness="3" mx="1" />
 
+            <Popover isOpen={isShow} initialFocusRef={initialFocusRef} trigger={triggerProps => {
+              return (
+                <Button
+                  {...triggerProps}
+                  onPress={() => setIsShow(!isShow)}
+                  bgColor="coolGray.500"
+                  _pressed={{
+                    bgColor: "colGray.600"
+                  }}
+                  leftIcon={<FontAwesome
+                    name='edit'
+                    size={28}
+                    color="#efefef"
+                  />}
+                >
+                  <Heading
+                    color="white"
+                    fontSize="md"
+                  >
+                    Curso
+                  </Heading>
+                </Button>
+              );
+            }}>
+              <Popover.Content width="56">
+                <Popover.Arrow bgColor="coolGray.700" />
+                <Popover.CloseButton onPress={() => setIsShow(!isShow)} />
+                {
+                  /* @ts-ignore */
+                }
+                <Popover.Header bgColor="coolGray.700" _text={{
+                  color: "#efefef"
+                }}>Edite seu Curso</Popover.Header>
+                <Popover.Body bgColor="coolGray.700">
+
+                  <FormControl isRequired={requiredCurseName}>
+                    <FormControl.Label _text={{
+                      fontSize: "xs",
+                      fontWeight: "medium",
+                      color: "#efefef"
+                    }}>
+                      Nome do Curso
+                    </FormControl.Label>
+                    <Input
+                      placeholder='seu curso'
+                      onPressIn={resetNameCurse}
+                      onChangeText={setNameCurse}
+                      InputLeftElement={
+                        <Icon as={<MaterialIcons name="local-library" />}
+                          size={5}
+                          ml={2}
+                          color="#efefef" />}
+                    />
+                  </FormControl>
+                  <FormControl mt="3" isRequired={requiredCompletedHours} isInvalid={invalidCompletedHours}>
+                    <FormControl.Label _text={{
+                      fontSize: "xs",
+                      fontWeight: "medium",
+                      color: "#efefef"
+                    }}>
+                      Horas Complementares Necessárias
+                    </FormControl.Label>
+                    <Input
+                      placeholder='A cargo horária exigida'
+                      onPressIn={resetHoursComplementary}
+                      onChangeText={setHoursComplementary}
+                      InputLeftElement={
+                        <Icon as={<MaterialIcons name="timer" />}
+                          size={5}
+                          ml={2}
+                          color="#efefef" />}
+                    />
+                  </FormControl>
+                  <FormControl mt="3" isRequired={requiredClosure}>
+                    <FormControl.Label _text={{
+                      fontSize: "xs",
+                      fontWeight: "medium",
+                      color: "#efefef"
+                    }}>
+                      Encerramento do Curso
+                    </FormControl.Label>
+                    <TouchableOpacity onPress={HandleIspickerShow}>
+                      <Input
+                        editable={false}
+                        placeholder='O término do curso'
+                        value={dateFormat}
+                        InputLeftElement={
+                          <Icon as={<MaterialIcons name="date-range" size={24} color="black" />}
+                            size={5}
+                            ml={2}
+                            color="#efefef"
+                          />
+                        }
+                      />
+
+                    </TouchableOpacity>
+
+                    {isPickerShow && (
+                      <DateTimePicker
+                        testID="dateTimePicker"
+                        display="calendar"
+                        value={closure}
+                        mode={"date"}
+                        is24Hour={true}
+                        minimumDate={new Date()}
+                        onChange={onChange}
+                      />
+                    )}
+                    <FormControl.ErrorMessage
+                      leftIcon={
+                        <WarningOutlineIcon
+                          size="xs"
+                        />}>
+                      Data inválida
+                    </FormControl.ErrorMessage>
+
+                  </FormControl>
+
+                </Popover.Body>
+                <Popover.Footer bgColor="coolGray.700">
+                  <Button.Group>
+                    <Button
+                      onPress={() => setIsShow(!isShow)}
+                      colorScheme="coolGray"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      onPress={handleEditCurse}
+                      colorScheme="warning"
+                    >
+                      Editar
+                    </Button>
+                  </Button.Group>
+                </Popover.Footer>
+              </Popover.Content>
+            </Popover>
+
+            <Divider orientation="vertical" bgColor={"coolGray.700"} thickness="3" mx="1" />
+            <CButton onPress={HandleRemoveCurse} title='Curso' bgColor="red.500" startIcon={<MaterialIcons name="delete" size={24} color="white" />}
+              _pressed={{
+                bgColor: "red.600"
+              }} />
           </HStack>
+
         </Box>
         : <Box>
           <Box my={2}>

@@ -9,6 +9,7 @@ import { Activitie } from '../screens/Activitie';
 import { Detail } from '../screens/Detail';
 import { Login } from '../screens/Login';
 import { Register } from '../screens/Register';
+import { ActivityDetails } from '../screens/ActivityDetails';
 
 export function AuthRoutes() {
     return (
@@ -34,8 +35,9 @@ export function UserRoutes() {
             }}>
 
             <stack.Screen name='Home' options={{ title: 'Seus Cursos' }} component={Home} />            
-            <stack.Screen name='Activitie' options={{ title: 'Suas Atividades' }} component={Activitie} />
-            <stack.Screen name='Details' options={{ title: 'Detalhes das Atividades' }} component={Detail} />
+            <stack.Screen name='Activitie' options={{ title: 'Detalhes do curso' }} component={Activitie} />
+            <stack.Screen name='Details' options={{ title: 'Suas Atividades' }} component={Detail} />
+            <stack.Screen name='activityDetails' options={{ title: 'Suas Atividades' }} component={ActivityDetails} />
 
         </stack.Navigator>
     )

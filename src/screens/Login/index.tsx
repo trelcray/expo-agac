@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import auth from '@react-native-firebase/auth'
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+// import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   Center, Box, Heading, FormControl,
@@ -23,7 +23,7 @@ export function Login() {
   const [invalidSenha, setInvalidSenha] = useState(false);
   const [requiredSenha, setRequiredSenha] = useState(false);
 
-  GoogleSignin.configure({
+ /*  GoogleSignin.configure({
     webClientId: '36498256399-v5he494sfo8n0g0i2qio5smgdjf65jn4.apps.googleusercontent.com',
   });
 
@@ -36,7 +36,8 @@ export function Login() {
   
     // Sign-in the user with the credential
     return auth().signInWithCredential(googleCredential);
-  }
+  } */
+  
 
 
   const login = async () => {
@@ -194,7 +195,7 @@ export function Login() {
                 bgColor: "warning.600"
               }}
             />
-            <Button
+            {/* <Button
               leftIcon={<MaterialCommunityIcons name="google" size={24} color="white" />}
               title="Entrar com Google"
               mt={5}
@@ -203,7 +204,7 @@ export function Login() {
                 bgColor: "gray.600"
               }}
               onPress={() => onGoogleButtonPress()}
-            />
+            /> */}
 
           </Box>
         </VStack>

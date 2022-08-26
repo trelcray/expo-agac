@@ -1,10 +1,12 @@
-import { Box, HStack, Text, VStack, Circle, Pressable, IPressableProps } from 'native-base';
+import { Box, HStack, Text, VStack, Pressable, IPressableProps } from 'native-base';
 import { VictoryPie } from 'victory-native';
 
 export type CategoriesProps = {
-    id_categoria: string,
-    nome_categoria: string,
-    horas_max: string,
+    id_categoria: string;
+    id_curso: string;
+    nome_categoria: string;
+    horas_max: number;
+    descricao: string;
     status: "open" | "closed";
 }
 

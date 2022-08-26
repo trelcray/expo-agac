@@ -1,19 +1,21 @@
-import { Center, Text, VStack } from 'native-base';
+import { Center, IPressableProps, Pressable, Text } from 'native-base';
 
 export type ActivitiesProps = {
-    id_atividade: string,
-    nome_atividade: string,
-    horas_completas: number,
+    id_atividade: string;
+    id_curso: string;
+    id_categoria: string;
+    nome_atividade: string;
+    horas_completas: number;
     URLcertificado: string;
 }
 
-type Props = {
+type Props = IPressableProps & {
     data: ActivitiesProps;
 }
 
 export function DetailActivities({ data, ...rest }: Props) {
   return (
-    <VStack {...rest}>
+    <Pressable {...rest}>
 
           <Center
             bgColor="white"
@@ -39,6 +41,6 @@ export function DetailActivities({ data, ...rest }: Props) {
 
           </Center>
           
-    </VStack>
+    </Pressable>
   );
 }
