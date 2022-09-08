@@ -11,27 +11,27 @@ export function Reports() {
           rounded="2xl"
         >
           <Text fontWeight={800} pb={2} >
-            Categoria: Participação em eventos
+            Categoria: Nome da categoria
             </Text>
           <Text fontWeight={500} pb={1}>
-            Atividade: JIC 2021
+            Atividade: Nome da atividade
           </Text>
           <Flex 
           flexDirection="row"
           justifyContent="space-between">
           <Text fontWeight={500} pb={1} fontSize={12}>
-            Criada em 02/04/2022
+            data de criação
           </Text>
           <Spacer />
           <Text fontWeight={500} pb={1} fontSize={12}>
-            Finalizada em 20/04/2022
+            data de finalização
           </Text>
           </Flex>
           <Text fontWeight={500} pb={1}>
-            20 horas completas
+            quantidade de horas completas
           </Text>
           <Text fontWeight={500}>
-            Certificado: www.certificado.com
+            Certificado: url ou arquivo
           </Text>
         </Center>
       </Box>

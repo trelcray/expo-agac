@@ -1,75 +1,42 @@
-import { Box, HStack, Text, VStack, Pressable, IPressableProps } from 'native-base';
-import { VictoryPie } from 'victory-native';
+import { Center, IPressableProps, Pressable, Text } from 'native-base';
 
-export type CategoriesProps = {
-    id_categoria: string;
+export type ActivitiesProps = {
+    id_atividade: string;
     id_curso: string;
-    nome_categoria: string;
-    horas_max: number;
-    descricao: string;
-    status: "open" | "closed";
+    id_categoria: string;
+    nome_atividade: string;
+    horas_completas: number;
+    URLcertificado: string;
 }
 
 type Props = IPressableProps & {
-    data: CategoriesProps;
+    data: ActivitiesProps;
 }
 
 export function Activities({ data, ...rest }: Props) {
+  return (
+    <Pressable {...rest}>
 
-    const statusColor = data.status === 'open' ? "#ea580c" : "#15803d";
+          <Center
+            bgColor="white"
+            mt={2}
+            mb={2}
+            p={2}
+            rounded="2xl"
+          >
 
-    return (
-        <Pressable {...rest}>
-            <HStack
-                bgColor="white"
-                mt={4}
-                alignItems="center"
-                justifyContent="space-between"
-                rounded="sm"
-                overflow="hidden"
+            <Text 
+                fontWeight={800} 
+                pb={2} 
             >
-                <Box h="full" w={2} bgColor={statusColor} />
-                <VStack
-                    flex={1}
-                    my={3}
-                    ml={5}
-                >
-                    <Text
-                        color="black"
-                        fontWeight="bold"
-                        fontSize="md"
-                    >
-                        {data.nome_categoria}
-                    </Text>
-                </VStack>
+                Atividade: {data.nome_atividade}
+            </Text>
 
-                <Box justifyContent="center" alignItems="center" maxW="50px" maxH="50px">
-                    <VictoryPie
-                        colorScale={[
-                            statusColor,
-                            "gray"
-                        ]}
-                        height={130}
-                        width={130}
-                        animate={{
-                            easing: "bounce"
-                        }}
-                        data={[
-                            { x: "", y: 20 },
-                            { x: "", y: 80 }
-                        ]}
-                        style={{
-                            labels: {
-                                fontWeight: 0,
-                                fontSize: 0
-                            }
-                        }}
-                    />
-                </Box>
-
-
-            </HStack>
-
-        </Pressable>
-    );
+            <Text fontWeight={500}>
+              {data.horas_completas} Horas completas
+            </Text>
+          </Center>
+          
+    </Pressable>
+  );
 }

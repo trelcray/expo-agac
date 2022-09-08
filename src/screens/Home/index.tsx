@@ -3,7 +3,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Button, Text, Popover, FormControl, Icon, Divider, FlatList, VStack, HStack, Center, Heading, WarningOutlineIcon } from 'native-base';
+import { Button, Text, Popover, FormControl, Icon, Divider, FlatList, VStack, HStack, Center, Heading, WarningOutlineIcon, ScrollView } from 'native-base';
 import { Input } from '../../components/Input';
 import { Button as CButton } from '../../components/Button';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -11,7 +11,6 @@ import { Curses } from '../../components/Curses';
 import { Alert, TouchableOpacity } from 'react-native';
 import { Loanding } from '../../components/Loanding';
 import { FormattedDate } from '../../utils/firestoreDateFormat';
-
 
 export function Home() {
   const navigation = useNavigation();
@@ -38,7 +37,7 @@ export function Home() {
     if (!hoursComplementary) {
       return setRequiredCompletedHours(true);
     }
-    if (/^-?\d*\.?\d*$/.test(hoursComplementary) === false) {
+    if (/^(?:\.|,|[0-9])*$/.test(hoursComplementary) === false) {
       return setInvalidCompletedHours(true);
     }
     if (!dateFormat) {
@@ -121,7 +120,7 @@ export function Home() {
   }
 
   function openScreen(id_curso: string) {
-    navigation.navigate('Activitie', { id_curso });
+    navigation.navigate('CurseDetails', { id_curso });
   }
 
   function handleSignOut() {
@@ -138,13 +137,13 @@ export function Home() {
   }, []);
 
   return (
+    
     <VStack
       px={4}
       py={6}
       flex={1}
       bgColor="#E1E1E6"
     >
-
       {isLoading
         ? <Loanding />
         : <FlatList

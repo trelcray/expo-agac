@@ -5,8 +5,8 @@ const { Screen, Navigator } = createNativeStackNavigator();
 const stack = createNativeStackNavigator();
 
 import { Home } from '../screens/Home';
-import { Activitie } from '../screens/Activitie';
-import { Detail } from '../screens/Detail';
+import { CurseDetails } from '../screens/CurseDetails';
+import { Activity } from '../screens/Activity';
 import { Login } from '../screens/Login';
 import { Register } from '../screens/Register';
 import { ActivityDetails } from '../screens/ActivityDetails';
@@ -35,9 +35,9 @@ export function UserRoutes() {
             }}>
 
             <stack.Screen name='Home' options={{ title: 'Seus Cursos' }} component={Home} />            
-            <stack.Screen name='Activitie' options={{ title: 'Detalhes do curso' }} component={Activitie} />
-            <stack.Screen name='Details' options={{ title: 'Suas Atividades' }} component={Detail} />
-            <stack.Screen name='activityDetails' options={{ title: 'Suas Atividades' }} component={ActivityDetails} />
+            <stack.Screen name='CurseDetails' options={{ title: 'Detalhes do curso' }} component={CurseDetails} />
+            <stack.Screen name='Activity' options={{ title: 'Suas Atividades' }} component={Activity} />
+            <stack.Screen name='activityDetails' options={{ title: 'Detalhes Atividades' }} component={ActivityDetails} />
 
         </stack.Navigator>
     )

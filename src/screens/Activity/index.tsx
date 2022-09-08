@@ -1,22 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { Box, Button, Center, Divider, FlatList, FormControl, Heading, HStack, Icon, Popover, Text, VStack, WarningOutlineIcon } from 'native-base';
+import { Box, Button, Center, FlatList, FormControl, Heading, HStack, Icon, Popover, Text, VStack, WarningOutlineIcon } from 'native-base';
 import { Input } from '../../components/Input';
 import { dateFormat } from '../../utils/firestoreDateFormat';
 import { MaterialIcons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
-import { ActivitiesProps, DetailActivities } from '../../components/DetailActivities';
 import { Button as CButton } from '../../components/Button'
-import { CategoriesProps } from '../../components/Activities';
+import { CategoriesProps } from '../../components/Categories';
 import { Loanding } from '../../components/Loanding';
+import { Activities, ActivitiesProps } from '../../components/Activities';
 
 type RouteParams = {
   id_categoria: string;
   id_curso: string;
 }
 
-export function Detail() {
+export function Activity() {
   const [show, setShow] = useState(false);
   const [isShow, setIsShow] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,12 +36,14 @@ export function Detail() {
   const [requiredMaxHours, setRequiredMaxHours] = useState(false);
   const [requiredDescription, setRequiredDescription] = useState(false);
   const [invalidMaxHours, setInvalidMaxHours] = useState(false);
+  const [total, setTotal] = useState(null);
+  const [max, setMax] = useState(null);
 
   const navigation = useNavigation();
   const initialFocusRef = useRef(null);
 
   const route = useRoute();
-  const { id_curso, id_categoria} = route.params as RouteParams;
+  const { id_curso, id_categoria } = route.params as RouteParams;
 
   function openScreen(id_categoria: string, id_curso: string, id_atividade: string) {
     navigation.navigate('activityDetails', { id_categoria, id_curso, id_atividade });
@@ -56,7 +58,7 @@ export function Detail() {
       if (!completHours) {
         return setRequiredCompletHours(true);
       }
-      if (/^-?\d*\.?\d*$/.test(completHours) === false) {
+      if (/^(?:\.|,|[0-9])*$/.test(completHours) === false) {
         return setInvalidCompletHours(true);
       }
       if (!certificateUrl) {
@@ -75,6 +77,8 @@ export function Detail() {
 
       ref.set({
         id_atividade: ref.id,
+        id_categoria: id_categoria,
+        id_curso: id_curso,
         nome_atividade: activityName,
         horas_completas: completHours,
         atividade_inicio: firestore.FieldValue.serverTimestamp(),
@@ -101,7 +105,7 @@ export function Detail() {
       if (!maxHours) {
         return setRequiredMaxHours(true);
       }
-      if (/^-?\d*\.?\d*$/.test(maxHours) === false) {
+      if (/^(?:\.|,|[0-9])*$/.test(maxHours) === false) {
         return setInvalidMaxHours(true);
       }
       if (!description) {
@@ -128,7 +132,7 @@ export function Detail() {
       setDescription("");
       setIsShow(false)
     } catch (error) {
-      console.log(error, "Erro ao editar o curso!")
+      console.log(error, "Erro ao editar a categoria!")
     }
   }
 
@@ -144,7 +148,7 @@ export function Detail() {
         .delete()
         .then(() => navigation.goBack())
     } catch (error) {
-      console.log(error, "erro ao excluir o curso")
+      console.log(error, "erro ao excluir a categoria")
     }
   }
 
@@ -183,9 +187,50 @@ export function Detail() {
       return subscriber;
 
     } catch (error) {
-      console.log(error, "Erro ao pegar os dados da categoria!")
+      console.log(error, "Erro ao pegar os dados da atividade!")
     }
   }
+
+  const getTotal = useCallback((max: number) => {
+    try {
+      const ref = firestore()
+        .collection('usuario')
+        .doc(auth().currentUser.uid)
+        .collection('curso')
+        .doc(id_curso)
+        .collection('categoria')
+        .doc(id_categoria)
+        .collection('atividade')
+
+      const subscriber = ref.onSnapshot(snapshot => {
+        setIsLoading(true);
+        const data = snapshot.docs.map(doc => {
+          const { horas_completas } = doc.data();
+
+          return {
+            horas_completas,
+          }
+        });
+
+        let local = 0.0
+        data.forEach((number) => {
+          local += parseFloat(number.horas_completas)
+        });
+        data.forEach(hours =>
+          hours.horas_completas)
+          
+        limiter(local, max);
+        setIsLoading(false);
+        return local
+      });
+      
+      return subscriber;
+    } catch (error) {
+      console.log(error, "erro ao pegar o total")
+    }
+  },[]
+  );
+
 
   const getCategories = () => {
     setIsLoading(true);
@@ -212,16 +257,61 @@ export function Detail() {
             status
           }
         });
-        setCategories(data);
+        if(data.length > 0){
+          setCategories(data);
+          setMax(data[0].horas_max)
+        }
         setIsLoading(false);
 
       });
+      
       return subscriber;
 
     } catch (error) {
       console.log(error, "Erro ao pegar os dados da categoria!")
+    }  
+  }
+
+  const limiter = (horas: number, max?: number) => {
+    try {
+      setIsLoading(true);
+      if (horas >= max) {
+        setTotal(max)
+    
+        const ref = firestore()
+          .collection('usuario')
+          .doc(auth().currentUser.uid)
+          .collection('curso')
+          .doc(id_curso)
+          .collection('categoria')
+          .doc(id_categoria)
+    
+        ref.update({
+          status: "closed"
+        });
+        setIsLoading(false);
+    
+      } else {
+        setTotal(horas);
+
+        const ref = firestore()
+          .collection('usuario')
+          .doc(auth().currentUser.uid)
+          .collection('curso')
+          .doc(id_curso)
+          .collection('categoria')
+          .doc(id_categoria)
+    
+        ref.update({
+          status: "open"
+        })
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log(error, "erro ao configurar o total")
     }
   }
+
 
   const resetActivityName = () => {
     setRequiredActivityName(false);
@@ -247,10 +337,37 @@ export function Detail() {
     setRequiredDescription(false);
   }
 
+  const updateCompletedHours = () => {
+   
+    const ref = firestore()
+      .collection('usuario')
+      .doc(auth().currentUser.uid)
+      .collection('curso')
+      .doc(id_curso)
+      .collection('categoria')
+      .doc(id_categoria)
+
+    ref.update({
+      id_categoria: ref.id,
+      horas_completadas: total
+    });
+  
+  }
+
   useEffect(() => {
     getActivities();
     getCategories();
-  }, []);
+  }, []); 
+
+  useEffect(() => {
+    if (!!max) {
+      getTotal(max);
+    }
+  }, [max]);
+
+  useEffect(() => {
+      updateCompletedHours();
+  }, [total]);
 
   return (
     <VStack
@@ -271,7 +388,7 @@ export function Detail() {
                 rounded="2xl"
                 key={item.id_categoria}
               >
-                <Text fontWeight={800} pb={3} color="white">{item.nome_categoria} : {item.horas_max} Horas</Text>
+                <Text fontWeight={800} pb={3} color="white">{item.nome_categoria} : {total}/{item.horas_max} Horas</Text>
                 <Text fontWeight={500} color="white">
                   {item.descricao}
                 </Text>
@@ -285,7 +402,7 @@ export function Detail() {
           <FlatList
             data={activities}
             keyExtractor={item => item.id_atividade}
-            renderItem={({ item }) => <DetailActivities data={item} onPress={() => openScreen(item.id_curso, item.id_categoria, item.id_atividade)} />}
+            renderItem={({ item }) => <Activities data={item} onPress={() => openScreen(item.id_categoria, item.id_curso, item.id_atividade)} />}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={() => (
               <Center>
@@ -434,13 +551,12 @@ export function Detail() {
               </Popover.Content>
             </Popover>
 
-            <Divider h={12} mt={4} orientation="vertical" bgColor={"coolGray.700"} thickness="3" mx="1" />
-
             <Popover isOpen={isShow} initialFocusRef={initialFocusRef} trigger={triggerProps => {
               return (
                 <Button
                   {...triggerProps}
                   mt={4}
+                  mx={1}
                   onPress={() => setIsShow(!isShow)}
                   bgColor="coolGray.500"
                   _pressed={{
@@ -469,7 +585,7 @@ export function Detail() {
                 }
                 <Popover.Header bgColor="coolGray.700" _text={{
                   color: "#efefef"
-                }}>Crie sua Categoria</Popover.Header>
+                }}>Edite sua Categoria</Popover.Header>
                 <Popover.Body bgColor="coolGray.700">
                   <FormControl isRequired={requiredNameCategory}>
                     <FormControl.Label _text={{
@@ -556,7 +672,6 @@ export function Detail() {
               </Popover.Content>
             </Popover>
 
-            <Divider mt={4} h={12} orientation="vertical" bgColor={"coolGray.700"} thickness="3" mx="1" />
             <CButton mt={4} onPress={HandleRemoveCategory} title='Categoria' bgColor="red.500" startIcon={<MaterialIcons name="delete" size={24} color="white" />}
               _pressed={{
                 bgColor: "red.600"
