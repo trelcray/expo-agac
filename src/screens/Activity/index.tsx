@@ -25,7 +25,6 @@ export function Activity() {
   const [certificateUrl, setCertificateUrl] = useState("");
   const [requiredActivityName, setRequiredActivityName] = useState(false);
   const [requiredCompletHours, setRequiredCompletHours] = useState(false);
-  const [requiredCertificateUrl, setRequiredCertificateUrl] = useState(false);
   const [invalidCompletHours, setInvalidCompletHours] = useState(false);
   const [activities, setActivities] = useState<ActivitiesProps[]>([]);
   const [categories, setCategories] = useState<CategoriesProps[]>([]);
@@ -60,9 +59,6 @@ export function Activity() {
       }
       if (/^(?:\.|,|[0-9])*$/.test(completHours) === false) {
         return setInvalidCompletHours(true);
-      }
-      if (!certificateUrl) {
-        return setRequiredCertificateUrl(true);
       }
 
       const ref = firestore()
@@ -321,9 +317,6 @@ export function Activity() {
     setRequiredCompletHours(false);
     setInvalidCompletHours(false);
   }
-  const resetCertificateUrl = () => {
-    setRequiredCertificateUrl(false);
-  }
 
   const resetNameCategory = () => {
     setRequiredNameCategory(false);
@@ -508,7 +501,7 @@ export function Activity() {
                     </FormControl.ErrorMessage>
                   </FormControl>
 
-                  <FormControl mt="3" isRequired={requiredCertificateUrl}>
+                  <FormControl mt="3" >
                     <FormControl.Label _text={{
                       fontSize: "xs",
                       fontWeight: "medium",
@@ -518,7 +511,6 @@ export function Activity() {
                     </FormControl.Label>
                     <Input
                       placeholder='Identificador do certificado'
-                      onPressIn={resetCertificateUrl}
                       onChangeText={setCertificateUrl}
                       InputLeftElement={
                         <Icon as={<MaterialCommunityIcons name="certificate" />}

@@ -148,8 +148,8 @@ export function CurseDetails() {
             horas_complementares,
           }
         }); 
+        if(data.length > 0){
         setComplementary(data);
-        if(!!complet){
         setIncomplet(data[0].horas_complementares - complet)
         }
         setIsLoading(false);

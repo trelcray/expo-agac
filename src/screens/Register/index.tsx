@@ -27,7 +27,7 @@ export function Register() {
     if (!name) {
       return setRequiredName(true);
     }
-    if (/^(?![ ])(?!.*[ ]{2})((?:e|da|do|das|dos|de|d'|D'|la|las|el|los)\s*?|(?:[A-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð'][^\s]*\s*?)(?!.*[ ]$))+$/.test(name) === false) {
+    if (/^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)+$/.test(name) === false) {
       return setInvalidName(true);
     }
     if (!email) {
@@ -136,7 +136,7 @@ export function Register() {
                 <WarningOutlineIcon
                   size="xs"
                 />}>
-              Nome Inválido
+              Nome completo Inválido
             </FormControl.ErrorMessage>
           </FormControl>
 
@@ -200,7 +200,7 @@ export function Register() {
                 <WarningOutlineIcon
                   size="xs"
                 />}>
-              Senha Inválida
+              Senha inferior a 6 dígitos
             </FormControl.ErrorMessage>
           </FormControl>
 
